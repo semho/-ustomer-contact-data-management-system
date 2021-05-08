@@ -4,7 +4,7 @@
 export function createAppTitle(title) {
   const appTitle = document.createElement('h2');
   appTitle.classList.add('control-panel__title');
-  appTitle.innerHTML = title;
+  appTitle.textContent = title;
   return appTitle;
 }
 //функция создания элемента
@@ -132,4 +132,83 @@ function getPopupOther(li, values) {
   }
 
   return li;
+}
+//создание модального окна
+export function createModal() {
+  const wrapper = createElement('div', 'control-panel__modal, modal');
+  const modal = createElement('div', 'modal__content');
+  const wrapTitleBlock = createElement('div', 'modal__title-content');
+  //заголовок
+  const title = createElement('h3', 'modal__title', 'Новый клиент');
+  const close = createElement('span', 'modal__close');
+  //форма
+  const form = createElement('form', 'modal__form');
+  //инпуты
+  //Фамилия
+  const secondName = createInputFormGroup('modal__', 'modal__input-secondName, form-control', 'Фамилия', true);
+  //Имя
+  const firstName = createInputFormGroup('modal__', 'modal__input-name, form-control', 'Имя', true);
+  //Отчество
+  const lastName = createInputFormGroup('modal__', 'modal__input-lastName, form-control', 'Отчество');
+  //блок добавить контакт
+  const wrapAddContactBlock = createElement('div', 'modal__add-contact, add-cotact');
+  const btnAddContact = createElement('a', 'add-contact__button, btn', 'Добавить контакт');
+  wrapAddContactBlock.append(btnAddContact);
+  //кнопка сохранить контакт
+  const btnSaveContact = createElement('button', 'modal__button-save, btn', 'Сохранить');
+  //кнопка отмена
+  const cansel = createElement('a', 'modal__button-cansel, btn', 'Отмена');
+
+
+  form.append(secondName, firstName, lastName, wrapAddContactBlock, btnSaveContact, cansel);
+  wrapTitleBlock.append(title, close);
+  modal.append(wrapTitleBlock, form);
+  wrapper.append(modal);
+
+  return {
+    cansel,
+    close,
+    btnAddContact,
+    wrapper
+  };
+}
+//создаем групу инпут
+//classNamePrefix - префикс названия класса родителя
+//classNameInput - класс поля ввода
+//placeholderValue - значение placeholder
+//required - обязательно ли поле к заполнению. Если true, то добаляем звездочку к placeholder
+function createInputFormGroup(classNamePrefix, classNameInput, placeholderValue, required) {
+  const wrapFormGroup = createElement('div', `${classNamePrefix}form-group`);
+  const input = createElement('input', classNameInput);
+  const placeholder = createElement('span', `${classNamePrefix}placeholder`, placeholderValue);
+  input.setAttribute('type', 'text');
+  if (required) {
+    input.setAttribute('required', required);
+    const star = createElement('span', `${classNamePrefix}star`, '*');
+    placeholder.append(star);
+  }
+  wrapFormGroup.append(input, placeholder);
+
+  return wrapFormGroup;
+}
+
+//группа инпут, объединенная с селект. делаем для выбора типа контактов у селект в модальном окне
+export function createGroupSelect(select) {
+  //контейнер
+  const wrapper = createElement('div', 'add-contact__box, input-group');
+  //группа для поля ввода
+  const wrapInput = createElement('div', 'add-contact__input-group, input-group-append');
+  const input = createElement('input', 'add-contact__input, form-control');
+  input.placeholder = 'Введите данные контакта';
+  //кнопка удаления, изначально скрыта
+  const btn = createElement('a', 'btn, add-contact__btnDelete, d-none');
+  wrapInput.append(input, btn);
+  //объединяем селект с инпут в общий контейнер
+  wrapper.append(select, wrapInput);
+  //возвращаем контейнер, инпут и кнопку
+  return {
+    wrapper,
+    input,
+    btn
+  };
 }

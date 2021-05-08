@@ -1,5 +1,8 @@
 'use strict';
 
+import {createAppTitle, createTableThead, createTableTbody, createElement} from "./createElements.js";
+import {showContacts, eventNewModal} from "./handlerFunctions.js";
+//масссив для примера
 const arrObjData = [
   {id: "123456", name: "Скворцов Денис Юрьевич", dateNew: "21.02.2021", dateUpdate: "21.02.2021", contacts: [{phone: "+7 (985) 443-00-00"}, {email: "@mail.ru"}, {vk: "vk.com"}, {fb: "fb.com"}, {other: "Twitter: test@yandex.ru"}, {other: "Twitter: test@yandex.ru"}, {other: "Twitter: test@yandex.ru"}], edit: "Изменить", delete: "Удалить"},
   {id: "123456", name: "Скворцов Денис Юрьевич", dateNew: "21.02.2021", dateUpdate: "21.02.2021", contacts: [{phone: "+7 (985) 443-00-00"}, {email: "@mail.ru"}, {vk: "vk.com"}, {other: "Twitter: test@yandex.ru"}, {other: "Twitter: test@yandex.ru"}], edit: "Изменить", delete: "Удалить"},
@@ -7,10 +10,6 @@ const arrObjData = [
   {id: "123456", name: "Скворцов Денис Юрьевич", dateNew: "21.02.2021", dateUpdate: "21.02.2021", contacts: [{phone: "+7 (985) 443-00-00"}, {email: "@mail.ru"}, {vk: "vk.com"}], edit: "Изменить", delete: "Удалить"},
   {id: "123456", name: "Скворцов Денис Юрьевич", dateNew: "21.02.2021", dateUpdate: "21.02.2021", contacts: [{phone: "+7 (985) 443-00-00"}, {email: "@mail.ru"}, {vk: "vk.com"}], edit: "Изменить", delete: "Удалить"}
 ];
-
-
-import {createAppTitle, createTableThead, createTableTbody, createElement} from "./createElements.js";
-import {showContacts} from "./handlerFunctions.js";
 
 function createControlPanelApp(container, title) {
   //заголовок приложения
@@ -28,10 +27,9 @@ function createControlPanelApp(container, title) {
   container.append(btnAddClient);
   //вешаем обработчики событий на иконку скрытых контактов
   const btnMore = document.querySelectorAll('.list-contact__more');
-  btnMore.forEach(btn => {
-    btn.addEventListener('click', showContacts);
-  });
+  btnMore.forEach(btn => btn.addEventListener('click', showContacts));
+  //обработчик событий на кнопку "добавить клиента"
+  btnAddClient.addEventListener('click', () => eventNewModal(container));
 };
-
 
 window.createControlPanelApp = createControlPanelApp;
