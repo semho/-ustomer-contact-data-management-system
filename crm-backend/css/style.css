@@ -434,7 +434,8 @@ body {
 }
 
 .modal__add-contact {
-  margin: 25px 0;
+  margin-top: 25px;
+  margin-bottom: 8px;
   width: 100%;
   min-height: 35px;
   background-color: rgb(78%, 77%, 82%, 0.2);
@@ -460,6 +461,7 @@ body {
 }
 
 .modal__button-save {
+  margin-top: 17px;
   padding: 12.5px 35px;
   align-self: center;
   max-width: 147px;
@@ -571,6 +573,12 @@ body {
   background-size: inherit;
   background-repeat: no-repeat;
   background-position: center;
+  transition: background 0.2s ease-in-out, border 0.2s ease-in-out;
+}
+
+.add-contact__btnDelete:hover {
+  background-image: url('../img/deleteHover.svg');
+  border-color: #F06A4D;
 }
 
 .add-contact__dropdown {
@@ -603,6 +611,27 @@ body {
   margin-bottom: 10px;
 }
 
+.error-border {
+  border: 1px solid rgba(240, 106, 77, 0.5);
+}
+
+.modal__form-group .form-control.error-border:focus  {
+  border-color: rgba(240, 106, 77, 0.5);
+}
+
+.modal__error {
+  font-size: 10px;
+  line-height: 14px;
+  color: #F06A4D;
+}
+
+.modal__error:last-of-type {
+  margin-bottom: 9px;
+}
+
+.modal__error:last-of-type + .modal__button-save {
+  margin-top: 0;
+}
 /*------------------*/
 
 

@@ -145,22 +145,22 @@ export function createModal() {
   const form = createElement('form', 'modal__form');
   //инпуты
   //Фамилия
-  const secondName = createInputFormGroup('modal__', 'modal__input-secondName, form-control', 'Фамилия', true);
+  const secondName = createInputFormGroup('modal__', 'modal__input-secondName, form-control', 'Фамилия', true, 'secondName');
   //Имя
-  const firstName = createInputFormGroup('modal__', 'modal__input-name, form-control', 'Имя', true);
+  const firstName = createInputFormGroup('modal__', 'modal__input-name, form-control', 'Имя', true, 'name');
   //Отчество
-  const lastName = createInputFormGroup('modal__', 'modal__input-lastName, form-control', 'Отчество');
+  const lastName = createInputFormGroup('modal__', 'modal__input-lastName, form-control', 'Отчество', false, 'lastName');
   //блок добавить контакт
   const wrapAddContactBlock = createElement('div', 'modal__add-contact, add-cotact');
   const btnAddContact = createElement('a', 'add-contact__button, btn', 'Добавить контакт');
   wrapAddContactBlock.append(btnAddContact);
   //кнопка сохранить контакт
-  const btnSaveContact = createElement('button', 'modal__button-save, btn', 'Сохранить');
+  const btnSave = createElement('button', 'modal__button-save, btn', 'Сохранить');
   //кнопка отмена
   const cansel = createElement('a', 'modal__button-cansel, btn', 'Отмена');
 
 
-  form.append(secondName, firstName, lastName, wrapAddContactBlock, btnSaveContact, cansel);
+  form.append(secondName, firstName, lastName, wrapAddContactBlock, btnSave, cansel);
   wrapTitleBlock.append(title, close);
   modal.append(wrapTitleBlock, form);
   wrapper.append(modal);
@@ -168,6 +168,7 @@ export function createModal() {
   return {
     cansel,
     close,
+    btnSave,
     btnAddContact,
     wrapper
   };
@@ -177,9 +178,10 @@ export function createModal() {
 //classNameInput - класс поля ввода
 //placeholderValue - значение placeholder
 //required - обязательно ли поле к заполнению. Если true, то добаляем звездочку к placeholder
-function createInputFormGroup(classNamePrefix, classNameInput, placeholderValue, required) {
+function createInputFormGroup(classNamePrefix, classNameInput, placeholderValue, required, nameInput = '') {
   const wrapFormGroup = createElement('div', `${classNamePrefix}form-group`);
   const input = createElement('input', classNameInput);
+  input.name = nameInput;
   const placeholder = createElement('span', `${classNamePrefix}placeholder`, placeholderValue);
   input.setAttribute('type', 'text');
   if (required) {

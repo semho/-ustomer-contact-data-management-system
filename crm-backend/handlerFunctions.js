@@ -2,6 +2,7 @@
 
 import {createModal, createGroupSelect} from "./createElements.js";
 import {createSelect} from "./customSelect.js";
+import {validateName, validateLastName} from "./validators.js";
 
 //показываем скрытые контакты
 export function showContacts() {
@@ -36,13 +37,25 @@ export function eventNewModal(container) {
   ];
   //обработчик событий на добавление нового типа контакта в модальном окне
   modal.btnAddContact.addEventListener('click', () => createNewTypeContact(typeContacts, modal.btnAddContact));
+
+  //вешаем обработчик на кнопку сохранения контакта
+  modal.btnSave.addEventListener('click', (event) => saveContact(modal, event));
 }
 //функция на изменение полей ввода фио клиента
 function changeValueInput() {
   if (this.value !== '') {
+    //если есть текст, добавляем класс к нашему плейсхолдеру для его стилизации
     this.parentElement.querySelector('.modal__placeholder').classList.add('is-active');
+    //если есть хотя бы один из перечисленных символов, ипнут подсветится как ошибка
+    if (this.value.trim().match(/[0-9~!@#$%^&*()_-]/)) {
+      this.classList.add('error-border');
+    } else {
+      this.classList.remove('error-border');
+    }
   } else {
+    //если текста нет, то удаляем класс у плейсходера и ошибки
     this.parentElement.querySelector('.modal__placeholder').classList.remove('is-active');
+    this.classList.remove('error-border');
   }
 }
 //создаем новый тип контакта в модальном окне
@@ -65,5 +78,32 @@ function changeInputTypeContact(selectGroup) {
     selectGroup.btn.classList.remove('d-none');
   } else {
     selectGroup.btn.classList.add('d-none');
+  }
+}
+
+//функция сохранения контакта
+function saveContact(modal, event) {
+  event.preventDefault();
+  //собираем поля формы модального окна
+  const secondName = modal.wrapper.querySelector('[name = secondName]').value.trim();
+  const firstName = modal.wrapper.querySelector('[name = name]').value.trim();
+  const lastName = modal.wrapper.querySelector('[name = lastName]').value.trim();
+  //валидация полей формы ФИО
+  const resultErrorValidateName = validateName(firstName, "Имя", "name");
+  const resultErrorValidateSecondName = validateName(secondName, "Фамилия", "secondName");
+  const resultErrorValidateLastName = validateLastName(lastName);
+  //если ошибки есть, выводим их
+  if (resultErrorValidateName) {
+    modal.btnSave.before(resultErrorValidateName);
+  }
+  if (resultErrorValidateSecondName) {
+    modal.btnSave.before(resultErrorValidateSecondName);
+  }
+  if (resultErrorValidateLastName) {
+    modal.btnSave.before(resultErrorValidateLastName);
+  }
+  //если ошибок нет, отправляем на сервер
+  if (!resultErrorValidateName && !resultErrorValidateSecondName && !resultErrorValidateLastName) {
+    console.log('ok');
   }
 }
