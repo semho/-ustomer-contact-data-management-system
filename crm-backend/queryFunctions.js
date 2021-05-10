@@ -25,3 +25,9 @@ export async function createClient(client) {
 
   return processedObj;
 }
+//удаление клиента
+export async function deleteClient(id) {
+  fetch(`${URL_CLIENTS}/${id}`, {
+    method: 'DELETE',
+  });
+}

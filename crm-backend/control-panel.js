@@ -2,7 +2,7 @@
 
 import {createAppTitle, createTableThead, createTableTbody, createElement} from "./createElements.js";
 import {showContacts, eventNewModal} from "./handlerFunctions.js";
-import {getListClients} from "./queryFunctions.js";
+import {getListClients, deleteClient} from "./queryFunctions.js";
 
 
 //массив для хранения объектов клиента, объект как пример пример
@@ -59,6 +59,24 @@ async function createControlPanelApp(container, title) {
 
   //обработчик событий на кнопку "добавить клиента"
   btnAddClient.addEventListener('click', () => eventNewModal(container, arrObjData, controlPanelHead));
+
+  //обработчик событий на всю таблицу для делигирования
+  controlPanelBody.addEventListener('click', (event) => eventDelete(event));
 };
+
+function eventDelete(event) {
+  //отслеживаем кнопку "удалить"
+  const btnDelete = event.target.closest('.table__body-delete');
+  //если в event.target нет btnDelete, то вернет null или если btnDelete не принадлежит текущему контакту, тоже null
+  if (!btnDelete || (!btnDelete.contains(btnDelete))) return;
+  //получаем родителя
+  const tr = btnDelete.parentElement;
+  //получаем id
+  const id = tr.children[0].textContent;
+  //удаляем клиента из бд
+  deleteClient(id);
+  //и таблицы
+  tr.remove();
+}
 
 window.createControlPanelApp = createControlPanelApp;
