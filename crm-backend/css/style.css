@@ -86,6 +86,7 @@ body {
   font-weight: 400;
   line-height: 16px;
   color: #B0B0B0;
+  white-space: nowrap;
 }
 
 .control-panel__table thead tr th:hover:nth-child(-1n+4) {

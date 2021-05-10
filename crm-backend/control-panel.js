@@ -2,17 +2,40 @@
 
 import {createAppTitle, createTableThead, createTableTbody, createElement} from "./createElements.js";
 import {showContacts, eventNewModal} from "./handlerFunctions.js";
+import {getListClients} from "./queryFunctions.js";
 
-//масссив для примера
-const arrObjData = [
-  {id: "123456", name: "Скворцов Денис Юрьевич", dateNew: "21.02.2021", dateUpdate: "21.02.2021", contacts: [{phone: "+7 (985) 443-00-00"}, {email: "@mail.ru"}, {vk: "vk.com"}, {fb: "fb.com"}, {other: "Twitter: test@yandex.ru"}, {other: "Twitter: test@yandex.ru"}, {other: "Twitter: test@yandex.ru"}], edit: "Изменить", delete: "Удалить"},
-  {id: "123456", name: "Скворцов Денис Юрьевич", dateNew: "21.02.2021", dateUpdate: "21.02.2021", contacts: [{phone: "+7 (985) 443-00-00"}, {email: "@mail.ru"}, {vk: "vk.com"}, {other: "Twitter: test@yandex.ru"}, {other: "Twitter: test@yandex.ru"}], edit: "Изменить", delete: "Удалить"},
-  {id: "123456", name: "Скворцов Денис Юрьевич", dateNew: "21.02.2021", dateUpdate: "21.02.2021", contacts: [{phone: "+7 (985) 443-00-00"}, {email: "@mail.ru"}, {vk: "vk.com"}], edit: "Изменить", delete: "Удалить"},
-  {id: "123456", name: "Скворцов Денис Юрьевич", dateNew: "21.02.2021", dateUpdate: "21.02.2021", contacts: [{phone: "+7 (985) 443-00-00"}, {email: "@mail.ru"}, {vk: "vk.com"}], edit: "Изменить", delete: "Удалить"},
-  {id: "123456", name: "Скворцов Денис Юрьевич", dateNew: "21.02.2021", dateUpdate: "21.02.2021", contacts: [{phone: "+7 (985) 443-00-00"}, {email: "@mail.ru"}, {vk: "vk.com"}], edit: "Изменить", delete: "Удалить"}
+
+//массив для хранения объектов клиента, объект как пример пример
+let arrObjData = [
+  {id: "123456", name: "Скворцов Денис Юрьевич", dateNew: "21.02.2021", dateUpdate: "21.02.2021", contacts:
+    [
+      { type: 'phone',
+        value: '+7 (985) 443-00-00'},
+      { type: 'email',
+        value: '@mail.ru'},
+      { type: 'vk',
+        value: 'vk.com'},
+      { type: 'fb',
+        value: 'fb.com'},
+      { type: 'other',
+        value: 'Twitter: test@yandex.ru'},
+      { type: 'other',
+        value: 'Twitter: test@yandex.ru'},
+      { type: 'other',
+        value: 'Twitter: test@yandex.ru'},
+    ],
+    edit: "Изменить", delete: "Удалить"
+  }
 ];
 
-function createControlPanelApp(container, title) {
+async function createControlPanelApp(container, title) {
+
+  //делаем запрос к серверу для получения списка клиентов
+  const queryGetList = await getListClients(container);
+
+  //добавляем наш список объектов к исходному списку
+  arrObjData.push(...queryGetList);
+
   //заголовок приложения
   const controlPanelTitle = createAppTitle(title);
   container.append(controlPanelTitle);
@@ -35,7 +58,7 @@ function createControlPanelApp(container, title) {
   btnMore.forEach(btn => btn.addEventListener('click', showContacts));
 
   //обработчик событий на кнопку "добавить клиента"
-  btnAddClient.addEventListener('click', () => eventNewModal(container));
+  btnAddClient.addEventListener('click', () => eventNewModal(container, arrObjData, controlPanelHead));
 };
 
 window.createControlPanelApp = createControlPanelApp;

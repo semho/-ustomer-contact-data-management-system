@@ -66,6 +66,7 @@ export function createTableTbody(table, arrData){
     entries.forEach(element => {
       //если это тип объект, значит это масссив объектов с контактными данными клиента
       if (typeof element[1] === 'object' ) {
+        //console.log(element[1]);
         const ul = getListContacts(element[1]); //получаем список всех контактных данных клиента
         const td = createElement('td', 'table__body-' + element[0]);
         td.append(ul);
@@ -86,23 +87,20 @@ export function createTableTbody(table, arrData){
 function getListContacts(arrObj) {
   const ul = createElement('ul', 'table__list-contact, list-contact');
   let step = 1;
+
   arrObj.forEach(obj => {
-    const entries = Object.entries(obj);
+    if (step < 5) { //если элементов меньше 5, то выводим их сразу
+      const li = createElement('li', 'list-contact__' + obj.type);
+      //значения помещаем в скрытый див, который будет всплывать при наведении на контакт
+      const popup = getPopupOther(li, obj);
 
-    entries.forEach(values => {
-      if (step < 5) { //если элементов меньше 5, то выводим их сразу
-        const li = createElement('li', 'list-contact__' + values[0]);
-        //значения помещаем в скрытый див, который будет всплывать при наведении на контакт
-        const popup = getPopupOther(li, values);
+      ul.append(popup);
+    } else {  //остальным присваиваем класс для их скрытия
+      const li = createElement('li', `list-contact__${obj.type}, d-none`);
+      const popup = getPopupOther(li, obj);
 
-        ul.append(popup);
-      } else { //остальным присваиваем класс для их скрытия
-        const li = createElement('li', `list-contact__${values[0]}, d-none`);
-        const popup = getPopupOther(li, values);
-
-        ul.append(popup);
-      }
-    })
+      ul.append(popup);
+    }
     step ++;
   });
   //если есть скрытые елементы списка контактов, создаем еще один для раскрытия остальных
@@ -116,10 +114,10 @@ function getListContacts(arrObj) {
   return ul;
 }
 //формируем попап для елементов списка
-function getPopupOther(li, values) {
-  if (values[0] === "other") { //разбиваем строку на 2 элемента массива, если категория контактов "другие"
-    const str1 = values[1].trim().split(" ")[0];
-    const str2 = values[1].trim().split(" ")[1];
+function getPopupOther(li, obj) {
+  if (obj.type === "other") {//разбиваем строку на 2 элемента массива, если категория контактов "другие"
+    const str1 = obj.value.trim().split(" ")[0];
+    const str2 = obj.value.trim().split(" ")[1];
     const link = createElement('a','', str2); //оборачиваем в ссылку вторую часть строки
     link.setAttribute('href', `mailto:${str2}`);
 
@@ -127,7 +125,7 @@ function getPopupOther(li, values) {
     div.append(link);
     li.append(div);
   } else {
-    const div = createElement('div', 'popup', values[1]);
+    const div = createElement('div', 'popup', obj.value);
     li.append(div);
   }
 
@@ -143,6 +141,7 @@ export function createModal() {
   const close = createElement('span', 'modal__close');
   //форма
   const form = createElement('form', 'modal__form');
+  form.name = 'formClients';
   //инпуты
   //Фамилия
   const secondName = createInputFormGroup('modal__', 'modal__input-secondName, form-control', 'Фамилия', true, 'secondName');

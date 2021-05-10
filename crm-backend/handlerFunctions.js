@@ -1,8 +1,9 @@
 'use strict';
 
-import {createModal, createGroupSelect} from "./createElements.js";
+import {createModal, createGroupSelect, createTableTbody} from "./createElements.js";
 import {createSelect} from "./customSelect.js";
 import {validateName, validateLastName} from "./validators.js";
+import {createClient} from "./queryFunctions.js";
 
 //показываем скрытые контакты
 export function showContacts() {
@@ -13,7 +14,7 @@ export function showContacts() {
   this.remove();
 }
 //функция на событие нажатия кнопки "добавить клиент"
-export function eventNewModal(container) {
+export function eventNewModal(container, arrObjData, headerTable) {
   //Если модальное окно уже есть, удалим его
   if (document.querySelector('.control-panel__modal')) {
     document.querySelector('.control-panel__modal').remove();
@@ -39,7 +40,7 @@ export function eventNewModal(container) {
   modal.btnAddContact.addEventListener('click', () => createNewTypeContact(typeContacts, modal.btnAddContact));
 
   //вешаем обработчик на кнопку сохранения контакта
-  modal.btnSave.addEventListener('click', (event) => saveContact(modal, event));
+  modal.btnSave.addEventListener('click', (event) => saveContact(modal, arrObjData, headerTable, event));
 }
 //функция на изменение полей ввода фио клиента
 function changeValueInput() {
@@ -82,9 +83,9 @@ function changeInputTypeContact(selectGroup) {
 }
 
 //функция сохранения контакта
-function saveContact(modal, event) {
+async function saveContact(modal, arrObjData, headerTable, event) {
   event.preventDefault();
-  //собираем поля формы модального окна
+  //собираем поля ФИО формы модального окна
   const secondName = modal.wrapper.querySelector('[name = secondName]').value.trim();
   const firstName = modal.wrapper.querySelector('[name = name]').value.trim();
   const lastName = modal.wrapper.querySelector('[name = lastName]').value.trim();
@@ -102,8 +103,88 @@ function saveContact(modal, event) {
   if (resultErrorValidateLastName) {
     modal.btnSave.before(resultErrorValidateLastName);
   }
-  //если ошибок нет, отправляем на сервер
+  //если ошибок нет
   if (!resultErrorValidateName && !resultErrorValidateSecondName && !resultErrorValidateLastName) {
-    console.log('ok');
+    //массив для сохранения объектов типа контактов
+    const arrTypeContacts = [];
+    //выбираем наш контейнер селекта
+    const selectBox = document.querySelectorAll('.add-contact__box');
+    //переберием каждый контейнер селекта и записываем объекта с данными в массив
+    selectBox.forEach(element => {
+      const input = element.querySelector('.add-contact__input');
+      const selected = element.querySelector('.add-contact__select');
+      if (input.value !== '') {
+        arrTypeContacts.push({
+          type: selected.dataset.value,
+          value: input.value
+        });
+      }
+    });
+
+    //собираем данные клиента в объект
+    const client = {
+      name: firstName,
+      surname: secondName,
+      lastName: lastName,
+      contacts: arrTypeContacts
+    };
+    //запрос на добавление нового клиента в бд
+    const queryCreateClient = await createClient(client);
+    //добавляем сохраненный объект в исходный массив хранения списка объектов для меньшей нагрузки на сервер во время последующей перерисовки таблицы
+    arrObjData.push(...queryCreateClient);
+
+    //обновляем таблицу
+    updateTable(headerTable, arrObjData);
+    //очищаем форму
+    //document.formClients.reset();
+
+    //удаляем модальное окно
+    modal.wrapper.remove();
   }
+}
+
+function updateTable(headerTable, arrObjData) {
+  //удаляем прежнее тело таблицы
+  headerTable.tBodies[0].remove();
+  //и вновь создаем
+  createTableTbody(headerTable, arrObjData);
+}
+
+//обработка массива объектов полученного от сервера для представления в приложение
+export function getProcessedListObj(result) {
+  const arrObj = [];
+  if (Array.isArray(result)) {
+    result.forEach(obj => {
+      const newDate = getFormatDate(obj.createdAt);
+      const upDate = getFormatDate(obj.updatedAt);
+      arrObj.push({
+        id: obj.id,
+        name: obj.surname + ' ' + obj.name + ' ' + obj.lastName,
+        dateNew: newDate,
+        dateUpdate: upDate,
+        contacts: obj.contacts,
+        edit: "Изменить",
+        delete: "Удалить"
+      })
+    });
+  } else {
+    const newDate = getFormatDate(result.createdAt);
+    const upDate = getFormatDate(result.updatedAt);
+    arrObj.push({
+      id: result.id,
+      name: result.surname + ' ' + result.name + ' ' + result.lastName,
+      dateNew: newDate,
+      dateUpdate: upDate,
+      contacts: result.contacts,
+      edit: "Изменить",
+      delete: "Удалить"
+    })
+  }
+
+  return arrObj;
+}
+// модификация даты
+function getFormatDate(date) {
+  const oldDate = date.split('T')[0].split('-');
+  return `${oldDate[2]}.${oldDate[1]}.${oldDate[0]}`
 }
