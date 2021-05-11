@@ -31,3 +31,24 @@ export async function deleteClient(id) {
     method: 'DELETE',
   });
 }
+//клент по id
+export async function getClient(id) {
+  const response = await fetch(`${URL_CLIENTS}/${id}`);
+  const client = await response.json();
+
+  return client;
+}
+//изменение клиента
+export async function editClient(client, id) {
+  const response = await fetch(`${URL_CLIENTS}/${id}`, {
+    method: 'PATCH',
+    body: JSON.stringify(client),
+    headers: {
+      'Content-Type':'application/json',
+    }
+  });
+  const result = await response.json();
+  const processedObj = getProcessedListObj(result);
+
+  return processedObj;
+}

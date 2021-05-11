@@ -132,12 +132,18 @@ function getPopupOther(li, obj) {
   return li;
 }
 //создание модального окна
-export function createModal() {
+export function createModal(id) {
   const wrapper = createElement('div', 'control-panel__modal, modal');
   const modal = createElement('div', 'modal__content');
   const wrapTitleBlock = createElement('div', 'modal__title-content');
   //заголовок
-  const title = createElement('h3', 'modal__title', 'Новый клиент');
+  let title = '';
+  if (id) {
+    title = createElement('h3', 'modal__title', 'Изменить данные');
+  } else {
+    title = createElement('h3', 'modal__title', 'Новый клиент');
+  }
+
   const close = createElement('span', 'modal__close');
   //форма
   const form = createElement('form', 'modal__form');
@@ -155,16 +161,32 @@ export function createModal() {
   wrapAddContactBlock.append(btnAddContact);
   //кнопка сохранить контакт
   const btnSave = createElement('button', 'modal__button-save, btn', 'Сохранить');
-  //кнопка отмена
-  const cansel = createElement('a', 'modal__button-cansel, btn', 'Отмена');
+  //кнопка отмена или удалить клиента
+  let cansel = '';
+  let btnDelete = '';
+  if (id) {
+    btnDelete = createElement('a', 'modal__button-cansel, btn', 'Удалить клиента');
+  } else {
+    cansel = createElement('a', 'modal__button-cansel, btn', 'Отмена');
+  }
 
+  form.append(secondName, firstName, lastName, wrapAddContactBlock, btnSave);
+  if (id) {
+    form.append(btnDelete);
+  } else {
+    form.append(cansel);
+  }
 
-  form.append(secondName, firstName, lastName, wrapAddContactBlock, btnSave, cansel);
-  wrapTitleBlock.append(title, close);
+  wrapTitleBlock.append(title);
+  if (id) {
+    wrapTitleBlock.append(createElement('span', 'modal__title-id', `ID: ${id}`));
+  }
+  wrapTitleBlock.append(close);
   modal.append(wrapTitleBlock, form);
   wrapper.append(modal);
 
   return {
+    btnDelete,
     cansel,
     close,
     btnSave,
@@ -194,15 +216,23 @@ function createInputFormGroup(classNamePrefix, classNameInput, placeholderValue,
 }
 
 //группа инпут, объединенная с селект. делаем для выбора типа контактов у селект в модальном окне
-export function createGroupSelect(select) {
+export function createGroupSelect(select, value) {
   //контейнер
   const wrapper = createElement('div', 'add-contact__box, input-group');
   //группа для поля ввода
   const wrapInput = createElement('div', 'add-contact__input-group, input-group-append');
   const input = createElement('input', 'add-contact__input, form-control');
+  if (value) {
+    input.value = value;
+  }
   input.placeholder = 'Введите данные контакта';
-  //кнопка удаления, изначально скрыта
-  const btn = createElement('a', 'btn, add-contact__btnDelete, d-none');
+  //кнопка удаления, изначально скрыта, если нет переданного аргумента value
+  let btn = '';
+  if (!value) {
+    btn = createElement('a', 'btn, add-contact__btnDelete, d-none');
+  } else {
+    btn = createElement('a', 'btn, add-contact__btnDelete');
+  }
   wrapInput.append(input, btn);
   //объединяем селект с инпут в общий контейнер
   wrapper.append(select, wrapInput);

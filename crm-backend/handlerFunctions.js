@@ -3,28 +3,31 @@
 import {createModal, createGroupSelect, createTableTbody} from "./createElements.js";
 import {createSelect} from "./customSelect.js";
 import {validateName, validateLastName} from "./validators.js";
-import {createClient} from "./queryFunctions.js";
+import {createClient, deleteClient, getClient, editClient} from "./queryFunctions.js";
 
 //показываем скрытые контакты
-export function showContacts() {
-  event.preventDefault();
-  this.parentElement.querySelectorAll('.d-none').forEach(li => {
+function showContacts(btnMore) {
+  btnMore.parentElement.querySelectorAll('.d-none').forEach(li => {
     li.classList.remove('d-none');
   })
-  this.remove();
+  btnMore.remove();
 }
 //функция на событие нажатия кнопки "добавить клиент"
-export function eventNewModal(container, arrObjData, headerTable) {
+export function eventNewModal(container, arrObjData, headerTable, id) {
   //Если модальное окно уже есть, удалим его
   if (document.querySelector('.control-panel__modal')) {
     document.querySelector('.control-panel__modal').remove();
   }
   //создаем модальное окно
-  const modal = createModal();
+  const modal = createModal(id);
   container.append(modal.wrapper);
   //обработчики событий закрытия модального окна
+  if (!id) {
+    modal.cansel.addEventListener('click', () => modal.wrapper.remove());
+  } else {
+    modal.btnDelete.addEventListener('click', () => modal.wrapper.remove());
+  }
   modal.close.addEventListener('click', () => modal.wrapper.remove());
-  modal.cansel.addEventListener('click', () => modal.wrapper.remove());
   //обработчик событий измений в поле ввода модального окна
   const inputModal = document.querySelectorAll('.modal__content input');
   inputModal.forEach(input => input.addEventListener('input', changeValueInput));
@@ -36,11 +39,14 @@ export function eventNewModal(container, arrObjData, headerTable) {
     {value: 'vk', label: 'Vk'},
     {value: 'fb', label: 'Facebook'},
   ];
+  //если есть id, значит клиент есть в базе, получаем его из бд и заполняем поля формы
+  if (id) {
+    fillingForm(typeContacts, modal, id);
+  }
   //обработчик событий на добавление нового типа контакта в модальном окне
   modal.btnAddContact.addEventListener('click', () => createNewTypeContact(typeContacts, modal.btnAddContact));
-
-  //вешаем обработчик на кнопку сохранения контакта
-  modal.btnSave.addEventListener('click', (event) => saveContact(modal, arrObjData, headerTable, event));
+  //вешаем обработчик на кнопку сохранения  клиента
+  modal.btnSave.addEventListener('click', (event) => saveClient(modal, arrObjData, headerTable, id, event));
 }
 //функция на изменение полей ввода фио клиента
 function changeValueInput() {
@@ -60,11 +66,11 @@ function changeValueInput() {
   }
 }
 //создаем новый тип контакта в модальном окне
-function createNewTypeContact(typeContacts, btnAddContact) {
+function createNewTypeContact(typeContacts, btnAddContact, value, type) {
   //создаем селект
-  const selectTypeContact = createSelect(typeContacts);
+  const selectTypeContact = createSelect(typeContacts, type);
   //отправляем в представление для создания группы объединения селекта с инпут
-  const selectGroup = createGroupSelect(selectTypeContact);
+  const selectGroup = createGroupSelect(selectTypeContact, value);
   //добавляем в DOM
   btnAddContact.before(selectGroup.wrapper);
   //обработчик на поле ввода
@@ -82,8 +88,8 @@ function changeInputTypeContact(selectGroup) {
   }
 }
 
-//функция сохранения контакта
-async function saveContact(modal, arrObjData, headerTable, event) {
+//функция сохранения клиента
+async function saveClient(modal, arrObjData, headerTable, id, event) {
   event.preventDefault();
   //собираем поля ФИО формы модального окна
   const secondName = modal.wrapper.querySelector('[name = secondName]').value.trim();
@@ -128,10 +134,20 @@ async function saveContact(modal, arrObjData, headerTable, event) {
       lastName: lastName,
       contacts: arrTypeContacts
     };
-    //запрос на добавление нового клиента в бд
-    const queryCreateClient = await createClient(client);
+    let resultQuery = '';
+    if (!id) {
+      //запрос на добавление нового клиента в бд
+      resultQuery = await createClient(client);
+    } else {
+      //найдем в массиве хранения объектов наш изменяемый объект клиента
+      const currentClient = arrObjData.find(item => item.id == id);
+      //удалим из массива
+      arrObjData.splice(arrObjData.indexOf(currentClient), 1);
+      //запрос на изменение объекта клиента
+      resultQuery = await editClient(client, id);
+    }
     //добавляем сохраненный объект в исходный массив хранения списка объектов для меньшей нагрузки на сервер во время последующей перерисовки таблицы
-    arrObjData.push(...queryCreateClient);
+    arrObjData.push(...resultQuery);
 
     //обновляем таблицу
     updateTable(headerTable, arrObjData);
@@ -187,4 +203,89 @@ export function getProcessedListObj(result) {
 function getFormatDate(date) {
   const oldDate = date.split('T')[0].split('-');
   return `${oldDate[2]}.${oldDate[1]}.${oldDate[0]}`
+}
+//функция обработчика событий на таблице
+export function eventOnTable(container, arrObjData, headerTable, event) {
+  //получаем id удаляемого объекта
+  const idDelete = getIdByTarget('.table__body-delete', event);
+
+  if (idDelete) {
+    //удаляем клиента из бд
+    deleteClient(idDelete.textContent);
+    //и таблицы
+    idDelete.parentElement.remove();
+  }
+
+  //получаем id изменяемого объекта
+  const idEdit = getIdByTarget('.table__body-edit', event);
+
+  if (idEdit) {
+    eventNewModal(container, arrObjData, headerTable, idEdit.textContent);
+  }
+
+  //иконка скрытых контактов клиента
+  const btnMore = getTarget('.list-contact__more', event);
+  //показываем контакты
+  if (btnMore) {
+    showContacts(btnMore);
+  }
+}
+//получение id по событию клика на кнопку
+function getIdByTarget(classTarget, event) {
+  //отслеживаем кнопку
+  const btn = event.target.closest(classTarget);
+
+  //если в event.target нет btn, то вернет null или если btn не принадлежит текущему контакту, тоже null
+  if (!btn || (!btn.contains(btn))) return;
+
+  //получаем родителя
+  const tr = btn.parentElement;
+
+  //получаем id
+  const id = tr.children[0];
+
+  //возвращаем id
+  return id
+}
+
+function getTarget(classTarget, event) {
+  //отслеживаем кнопку
+  const btn = event.target.closest(classTarget);
+
+  //если в event.target нет btn, то вернет null или если btn не принадлежит текущему контакту, тоже null
+  if (!btn || (!btn.contains(btn))) return;
+
+  return btn
+}
+
+//функция берет данные объекта клиента из БД и заполняет форму модального окна
+async function fillingForm(typeContacts, modal, id) {
+  const client = await getClient(id);
+  //заполняем форму ФИО
+  fillingFullName(modal, client);
+  //если массив "контакты" содержит объекты
+  if(client.contacts.filter(i => i.constructor.name === "Object").length > 0) {
+    //перебираем их
+    client.contacts.forEach(obj => {
+      //и добавляем в группу селект-инпут
+      createNewTypeContact(typeContacts, modal.btnAddContact, obj.value, obj.type);
+    });
+  }
+}
+//функция заполняет поля формы ФИО
+function fillingFullName(modal, client) {
+  //получаем поля формы ФИО
+  const secondName = modal.wrapper.querySelector('[name = secondName]');
+  const firstName = modal.wrapper.querySelector('[name = name]');
+  const lastName = modal.wrapper.querySelector('[name = lastName]');
+  //поставляем значения из объекта БД
+  secondName.value = client.surname;
+  firstName.value = client.name;
+  lastName.value = client.lastName;
+  //добаляем класс к плейсхолдер
+  secondName.nextElementSibling.classList.add("is-active");
+  firstName.nextElementSibling.classList.add("is-active");
+  if (client.lastName) {
+    lastName.nextElementSibling.classList.add("is-active");
+  }
 }

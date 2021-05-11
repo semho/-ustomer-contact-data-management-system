@@ -3,7 +3,7 @@
 import {createElement} from "./createElements.js";
 
 //создание имитации селекта
-export function createSelect(typeContacts) {
+export function createSelect(typeContacts, selected) {
   const container = createElement('div', 'add-contact__dropdown, dropdown');
   const list = createElement('ul', 'add-contact__box-option, dropdown-menu');
 
@@ -13,8 +13,18 @@ export function createSelect(typeContacts) {
     list.append(li);
   }
   //выбранный элемент по умолчанию
-  const select = createElement('a', 'add-contact__select, btn', typeContacts[0].label);
-  select.setAttribute('data-value', typeContacts[0].value);
+  let select = '';
+  if (!selected) {
+    select = createElement('a', 'add-contact__select, btn', typeContacts[0].label);
+    select.setAttribute('data-value', typeContacts[0].value);
+  } else {
+    typeContacts.forEach(element => {
+      if (element.value === selected) {
+        select = createElement('a', 'add-contact__select, btn', element.label);
+        select.setAttribute('data-value', selected);
+      }
+    });
+  }
 
   container.append(select, list);
   //обработчик на селект
