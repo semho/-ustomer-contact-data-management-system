@@ -58,11 +58,6 @@ body {
   box-shadow:  0px 0px 4px 4px rgba(152, 115, 255, 0.2);
 }
 
-@media (min-width: 1200px){
-  .container.header__container {
-    max-width: 1396px;
-  }
-}
 /*--------------------*/
 /*------- Main -------*/
 .control-panel__container {
@@ -86,7 +81,6 @@ body {
   font-weight: 400;
   line-height: 16px;
   color: #B0B0B0;
-  white-space: nowrap;
 }
 
 .control-panel__table thead tr th:hover:nth-child(-1n+4) {
@@ -132,6 +126,11 @@ body {
   border: none;
 }
 
+.table__body-dateNew span, .table__body-dateUpdate span {
+  margin-left: 10px;
+  color: #B0B0B0;
+}
+
 .table__list-contact {
   display: flex;
   flex-wrap: wrap;
@@ -140,6 +139,19 @@ body {
 
 .table__body-edit, .table__body-delete {
   position: relative;
+  padding-left: 15px;
+  background-repeat: no-repeat;
+  background-position-y: center;
+}
+
+.table__body-edit {
+  margin-right: 32px;
+  background-image: url("../img/edit.svg");
+}
+
+.table__body-delete {
+  background-image: url("../img/cancel.svg");
+  background-position-x: -2px;
 }
 
 .table__body-edit:hover {
@@ -151,7 +163,7 @@ body {
   color: #F06A4D;
   cursor: pointer;
 }
-
+/*
 .table__body-edit::before, .table__body-delete::before {
   position: absolute;
   display: inline-block;
@@ -169,7 +181,7 @@ body {
 
 .table__body-delete::before {
   background-image: url("../img/cancel.svg");
-}
+} */
 
 .table__list-contact li {
   position: relative;
@@ -219,7 +231,7 @@ body {
   bottom: 26px;
   left: 50%;
   padding: 7px 14px 8px 14px;
-  font-weight: 700;
+  font-weight: normal;
   font-size: 12px;
   line-height: 16px;
   width: max-content;
@@ -253,9 +265,13 @@ body {
   font-weight: 400;
 }
 
-.list-contact__other .popup a {
+.table__list-contact .link-contact{
   font-weight: 700;
   color: #B89EFF;
+}
+
+.table__list-contact .text-contact{
+  font-weight: 700;
 }
 
 .control-panel__button {
@@ -305,11 +321,6 @@ body {
   color: #333333;
 }
 
-@media (min-width: 1200px){
-  .container, .container-lg, .container-md, .container-sm, .container-xl {
-      max-width: 1216px;
-  }
-}
 
 /*------------------*/
 /*----- Modal ------*/
@@ -345,6 +356,7 @@ body {
   padding: 30px 24px 0 30px;
   margin-bottom: 32px;
   width: 100%;
+  align-items: baseline;
 }
 
 .modal__title {
@@ -447,6 +459,7 @@ body {
   font-weight: 600;
   line-height: 19px;
   color: #333333;
+  transition: color 0.2s ease-in-out;
 }
 
 .add-contact__button::before {
@@ -459,6 +472,13 @@ body {
   background-image: url('../img/add_circle_outline.svg');
   background-repeat: no-repeat;
   background-position-y: -1px;
+  transition: background 0.2s ease-in-out;
+}
+.add-contact__button:hover {
+  color: #9873FF;
+}
+.add-contact__button:hover::before {
+  background-image: url('../img/add_circle_outline_fill.svg');
 }
 
 .modal__button-save {
@@ -633,7 +653,156 @@ body {
 .modal__error:last-of-type + .modal__button-save {
   margin-top: 0;
 }
+
+.model__content-delete {
+  min-height: 215px;
+  align-items: center;
+}
+
+.model__content-delete .modal__title-content {
+  display: block;
+  position: relative;
+  margin-bottom: 11px;
+}
+
+.model__content-delete .modal__title-content .modal__close {
+  position: absolute;
+  right: 24px;
+  top: 24px;
+}
+
+.modal__text {
+  margin-bottom: 25px;
+  padding: 0 20px;
+  max-width: 275px;
+  line-height: 19px;
+}
+
+.model__content-delete .modal__button-save {
+  margin-top: 0;
+}
+
+.modal__title-id {
+  margin-left: 9px;
+  font-size: 12px;
+  line-height: 16px;
+  color: #b0b0b0;
+}
 /*------------------*/
 
+/*----- Spiner -----*/
+.control-panel__spiner {
+  opacity: 0;
+  position: absolute;
+  top: 102px;
+  background-color: #ffffff;
+  overflow: hidden;
+  z-index: -1;
+}
 
+.control-panel__spiner::before {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-image: url('../img/spiner.svg');
+  background-position: center;
+  background-repeat: no-repeat;
+  animation: rotate 1s linear infinite;
+}
 
+@keyframes rotate {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.control-panel__container {
+  position: relative;
+}
+
+.loading + .control-panel__spiner {
+  opacity: 1;
+  overflow: visible;
+  z-index: 1;
+}
+
+/*------------------*/
+
+@media (min-width: 320px) {
+  .container, .container-md, .container-sm {
+    max-width: 758px;
+  }
+
+  .table__head-name {
+    white-space: nowrap;
+  }
+
+  .table__body-dateNew span, .table__body-dateUpdate span {
+    display: block;
+    margin-left: 0;
+  }
+
+  .table__body-edit {
+    margin-right: 0;
+  }
+
+  .table__body-delete {
+    display: block;
+    margin-top: 5px;
+  }
+}
+
+@media (min-width: 768px) {
+  .container, .container-md, .container-sm {
+    max-width: 758px;
+  }
+
+  .table__head-name {
+    white-space: nowrap;
+  }
+
+  .table__body-dateNew span, .table__body-dateUpdate span {
+    display: block;
+    margin-left: 0;
+  }
+}
+
+@media (min-width: 1024px){
+  .container, .container-lg, .container-md, .container-sm, .container-xl {
+      max-width: 1014px;
+  }
+
+  .table__head-dateNew, .table__head-dateUpdat {
+    white-space: normal;
+  }
+
+  .table__body-dateNew span, .table__body-dateUpdate span {
+    display: inline-block;
+    margin-left: 10px;
+  }
+
+  .table__body-delete {
+    display: inline-block;
+  }
+}
+@media (min-width: 1200px){
+  .container, .container-lg, .container-md, .container-sm, .container-xl {
+      max-width: 1216px;
+  }
+  .container.header__container {
+    max-width: 1396px;
+  }
+
+  .table__head-name, .table__head-dateNew, .table__head-dateUpdate {
+    white-space: nowrap;
+  }
+
+  .table__body-edit {
+    margin-right: 32px;
+  }
+
+  .table__body-delete {
+    margin-top: 0;
+  }
+}

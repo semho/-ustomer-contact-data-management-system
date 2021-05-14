@@ -1,8 +1,8 @@
 'use strict';
 
-import {createModal, createGroupSelect, createTableTbody} from "./createElements.js";
+import {createModal, createGroupSelect, createTableTbody, createModalDelete} from "./createElements.js";
 import {createSelect} from "./customSelect.js";
-import {validateName, validateLastName} from "./validators.js";
+import {validateName, validateLastName, validateErrorsServer} from "./validators.js";
 import {createClient, deleteClient, getClient, editClient} from "./queryFunctions.js";
 
 //показываем скрытые контакты
@@ -12,7 +12,7 @@ function showContacts(btnMore) {
   })
   btnMore.remove();
 }
-//функция на событие нажатия кнопки "добавить клиент"
+//функция на событие нажатия кнопки "добавить клиент"/изменить
 export function eventNewModal(container, arrObjData, headerTable, id) {
   //Если модальное окно уже есть, удалим его
   if (document.querySelector('.control-panel__modal')) {
@@ -25,7 +25,7 @@ export function eventNewModal(container, arrObjData, headerTable, id) {
   if (!id) {
     modal.cansel.addEventListener('click', () => modal.wrapper.remove());
   } else {
-    modal.btnDelete.addEventListener('click', () => modal.wrapper.remove());
+    modal.btnDelete.addEventListener('click', () => modalDelete(container, arrObjData, id));
   }
   modal.close.addEventListener('click', () => modal.wrapper.remove());
   //обработчик событий измений в поле ввода модального окна
@@ -34,7 +34,7 @@ export function eventNewModal(container, arrObjData, headerTable, id) {
   //массив объектов для селекта
   const typeContacts = [
     {value: 'phone', label: 'Телефон'},
-    {value: 'other', label: 'Доп.телефон'},
+    {value: 'other', label: 'Другое'},
     {value: 'email', label: 'Email'},
     {value: 'vk', label: 'Vk'},
     {value: 'fb', label: 'Facebook'},
@@ -47,6 +47,8 @@ export function eventNewModal(container, arrObjData, headerTable, id) {
   modal.btnAddContact.addEventListener('click', () => createNewTypeContact(typeContacts, modal.btnAddContact));
   //вешаем обработчик на кнопку сохранения  клиента
   modal.btnSave.addEventListener('click', (event) => saveClient(modal, arrObjData, headerTable, id, event));
+
+
 }
 //функция на изменение полей ввода фио клиента
 function changeValueInput() {
@@ -77,6 +79,11 @@ function createNewTypeContact(typeContacts, btnAddContact, value, type) {
   selectGroup.input.addEventListener('input', () => changeInputTypeContact(selectGroup));
   //обработчик на кнопку удаления типа контакта
   selectGroup.btn.addEventListener('click', () => selectGroup.wrapper.remove());
+  //убираем кнопку "добавить контакт", если контактов больше 10
+  const count = document.querySelectorAll('.add-contact__box');
+  if (count.length >= 10) {
+    btnAddContact.remove();
+  }
 }
 
 //проверяем поле на заполнение
@@ -111,6 +118,14 @@ async function saveClient(modal, arrObjData, headerTable, id, event) {
   }
   //если ошибок нет
   if (!resultErrorValidateName && !resultErrorValidateSecondName && !resultErrorValidateLastName) {
+
+    //заглушка, пока ждем ответ сервера
+    headerTable.classList.add('loading');
+    const widthTable = headerTable.tBodies[0].offsetWidth;
+    const heightTable = headerTable.tBodies[0].offsetHeight;
+    document.querySelector('.control-panel__spiner').style.height = heightTable + 'px';
+    document.querySelector('.control-panel__spiner').style.width = widthTable + 'px';
+
     //массив для сохранения объектов типа контактов
     const arrTypeContacts = [];
     //выбираем наш контейнер селекта
@@ -134,7 +149,9 @@ async function saveClient(modal, arrObjData, headerTable, id, event) {
       lastName: lastName,
       contacts: arrTypeContacts
     };
+
     let resultQuery = '';
+
     if (!id) {
       //запрос на добавление нового клиента в бд
       resultQuery = await createClient(client);
@@ -146,16 +163,24 @@ async function saveClient(modal, arrObjData, headerTable, id, event) {
       //запрос на изменение объекта клиента
       resultQuery = await editClient(client, id);
     }
-    //добавляем сохраненный объект в исходный массив хранения списка объектов для меньшей нагрузки на сервер во время последующей перерисовки таблицы
-    arrObjData.push(...resultQuery);
+    //если запросы возвращаю объект, а не строку с ошибкой:
+    if (typeof resultQuery === 'object' && resultQuery !== null) {
+      //добавляем сохраненный объект в исходный массив хранения списка объектов для меньшей нагрузки на сервер во время последующей перерисовки таблицы
+      arrObjData.push(...resultQuery);
 
-    //обновляем таблицу
-    updateTable(headerTable, arrObjData);
-    //очищаем форму
-    //document.formClients.reset();
+      //обновляем таблицу
+      updateTable(headerTable, arrObjData);
+      //очищаем форму
+      //document.formClients.reset();
 
-    //удаляем модальное окно
-    modal.wrapper.remove();
+      //удаляем модальное окно
+      modal.wrapper.remove();
+      //удаляем заглушку предзагрузки
+      headerTable.classList.remove('loading');
+    } else {
+      const error = validateErrorsServer(resultQuery);
+      modal.btnSave.before(error);
+    }
   }
 }
 
@@ -179,8 +204,7 @@ export function getProcessedListObj(result) {
         dateNew: newDate,
         dateUpdate: upDate,
         contacts: obj.contacts,
-        edit: "Изменить",
-        delete: "Удалить"
+        editAndDelete: "Изменить Удалить"
       })
     });
   } else {
@@ -192,8 +216,7 @@ export function getProcessedListObj(result) {
       dateNew: newDate,
       dateUpdate: upDate,
       contacts: result.contacts,
-      edit: "Изменить",
-      delete: "Удалить"
+      editAndDelete: "Изменить Удалить"
     })
   }
 
@@ -201,19 +224,20 @@ export function getProcessedListObj(result) {
 }
 // модификация даты
 function getFormatDate(date) {
-  const oldDate = date.split('T')[0].split('-');
-  return `${oldDate[2]}.${oldDate[1]}.${oldDate[0]}`
+  const dateDMY = date.split('T')[0].split('-');
+  const dateHM = date.split('T')[1].split(':');
+
+  return `${dateDMY[2]}.${dateDMY[1]}.${dateDMY[0]} ${dateHM[0]}:${dateHM[1]}`;
 }
+
 //функция обработчика событий на таблице
 export function eventOnTable(container, arrObjData, headerTable, event) {
+
   //получаем id удаляемого объекта
   const idDelete = getIdByTarget('.table__body-delete', event);
 
   if (idDelete) {
-    //удаляем клиента из бд
-    deleteClient(idDelete.textContent);
-    //и таблицы
-    idDelete.parentElement.remove();
+    modalDelete(container, arrObjData, idDelete.textContent)
   }
 
   //получаем id изменяемого объекта
@@ -232,6 +256,7 @@ export function eventOnTable(container, arrObjData, headerTable, event) {
 }
 //получение id по событию клика на кнопку
 function getIdByTarget(classTarget, event) {
+
   //отслеживаем кнопку
   const btn = event.target.closest(classTarget);
 
@@ -239,12 +264,12 @@ function getIdByTarget(classTarget, event) {
   if (!btn || (!btn.contains(btn))) return;
 
   //получаем родителя
-  const tr = btn.parentElement;
+  const tr = btn.parentElement.parentElement;
 
-  //получаем id
+  // //получаем id
   const id = tr.children[0];
 
-  //возвращаем id
+  // //возвращаем id
   return id
 }
 
@@ -261,15 +286,21 @@ function getTarget(classTarget, event) {
 //функция берет данные объекта клиента из БД и заполняет форму модального окна
 async function fillingForm(typeContacts, modal, id) {
   const client = await getClient(id);
-  //заполняем форму ФИО
-  fillingFullName(modal, client);
-  //если массив "контакты" содержит объекты
-  if(client.contacts.filter(i => i.constructor.name === "Object").length > 0) {
-    //перебираем их
-    client.contacts.forEach(obj => {
-      //и добавляем в группу селект-инпут
-      createNewTypeContact(typeContacts, modal.btnAddContact, obj.value, obj.type);
-    });
+  //если сервер вернул объект
+  if (typeof client === 'object' && client !== null) {
+    //заполняем форму ФИО
+    fillingFullName(modal, client);
+    //если массив "контакты" содержит объекты
+    if (client.contacts.filter(i => i.constructor.name === "Object").length > 0) {
+      //перебираем их
+      client.contacts.forEach(obj => {
+        //и добавляем в группу селект-инпут
+        createNewTypeContact(typeContacts, modal.btnAddContact, obj.value, obj.type);
+      });
+    }
+  } else {
+    const error = validateErrorsServer(client);
+    modal.btnSave.before(error);
   }
 }
 //функция заполняет поля формы ФИО
@@ -287,5 +318,48 @@ function fillingFullName(modal, client) {
   firstName.nextElementSibling.classList.add("is-active");
   if (client.lastName) {
     lastName.nextElementSibling.classList.add("is-active");
+  }
+}
+//создание модального окна удаления клиента
+function modalDelete(container, arrObjData, idDelete) {
+  //Если модальное окно уже есть, удалим его
+  if (document.querySelector('.control-panel__modal')) {
+    document.querySelector('.control-panel__modal').remove();
+  }
+  //создаем модальное окно
+  const modal = createModalDelete();
+  container.append(modal.wrapper);
+  //обработчики закрытия модального окна
+  modal.close.addEventListener('click', () => modal.wrapper.remove());
+  modal.cansel.addEventListener('click', () => modal.wrapper.remove());
+  //вешаем обработчик на кнопку удаления контакта из таблицы и БД
+  modal.btnDelete.addEventListener('click', () => eventDeleteClient(modal, arrObjData, idDelete));
+}
+//функция обработки события удаления клиента
+async function eventDeleteClient(modal, arrObjData, idDelete) {
+  //удаляем клиента из бд
+  const result = await deleteClient(idDelete);
+
+  //если в статусе ответа сервера на удаления клиента не число
+  if (typeof result !== "number") {
+
+    //найдем в массиве хранения объектов наш удаляемый объект клиента
+    const currentClient = arrObjData.find(item => item.id == idDelete);
+    //удалим из массива
+    arrObjData.splice(arrObjData.indexOf(currentClient), 1);
+
+    //и таблицы
+    const cellsId = document.querySelectorAll('.table__body-id');
+    cellsId.forEach(id => {
+      if (id.textContent === idDelete) {
+        id.parentElement.remove();
+      }
+    });
+    //idDelete.parentElement.remove();
+    //удаляем модальное окно после события
+    modal.wrapper.remove();
+  } else {
+    const error = validateErrorsServer(result);
+    modal.btnDelete.before(error);
   }
 }

@@ -11,7 +11,7 @@ export function validateName(string, input, prefix) {
   }
   //запись новой ошибки
   const stringError = createElement('span', `modal__error, modal__error-${prefix}`);
-  if (!string.match(/^[a-zа-яёA-ZА-Я0-9]{3,15}$/)) {
+  if (!string.match(/^[a-zа-яёA-ZА-Я0-9]{3,20}$/)) {
     stringError.textContent = `Некорректно заполнено поле ${input}!`;
   } else {
     return false;
@@ -33,6 +33,37 @@ export function validateLastName(string) {
   } else {
     return false;
   }
+
+  return stringError;
+}
+//обробатываем статусы ответа сервера
+export function validateErrorsServer(numberError) {
+
+  let error; //переменная для записи строки ошибок
+
+  let numberErrorServer = Boolean(~String(numberError).indexOf(String(5))); //проверяем на совпадения с ошибкой 5хх
+  if (numberErrorServer) {
+    numberErrorServer = 500;
+  } else {
+    numberErrorServer = numberError;
+  }
+
+  switch(numberErrorServer) {
+    case 404:
+      error = 'Клиент не найден на сервере';
+      break;
+    case 422:
+      error = 'Серверу не удалось обработать инструкции содержимого';
+      break;
+    case 500:
+      error = 'Внутренняя ошибка сервера';
+      break;
+    default:
+      error = 'Что-то пошло не так...';
+      break;
+  }
+
+  const stringError = createElement('span', "modal__error", String(error));
 
   return stringError;
 }

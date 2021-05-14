@@ -6,10 +6,14 @@ const URL_CLIENTS = 'http://localhost:3000/api/clients';
 //список клиентов
 export async function getListClients() {
   const response = await fetch(URL_CLIENTS);
-  const result = await response.json();
-  const processedListObj = getProcessedListObj(result);
+  if (response.ok) {
+    const result = await response.json();
+    const processedListObj = getProcessedListObj(result);
 
-  return processedListObj;
+    return processedListObj;
+  } else {
+    return response.status;
+  }
 }
 //добавление клиента
 export async function createClient(client) {
@@ -20,23 +24,37 @@ export async function createClient(client) {
       'Content-Type': 'application/json',
     }
   });
-  const result = await response.json();
-  const processedObj = getProcessedListObj(result);
+  if (response.ok) {
+    const result = await response.json();
+    const processedObj = getProcessedListObj(result);
 
-  return processedObj;
+    return processedObj;
+  } else {
+    return response.status;
+  }
 }
 //удаление клиента
 export async function deleteClient(id) {
-  fetch(`${URL_CLIENTS}/${id}`, {
+  const response = await fetch(`${URL_CLIENTS}/${id}`, {
     method: 'DELETE',
   });
+
+  if (response.ok) {
+    return true;
+  } else {
+    return response.status;
+  }
 }
 //клент по id
 export async function getClient(id) {
   const response = await fetch(`${URL_CLIENTS}/${id}`);
-  const client = await response.json();
+  if (response.ok) {
+    const client = await response.json();
 
-  return client;
+    return client;
+  } else {
+    return response.status;
+  }
 }
 //изменение клиента
 export async function editClient(client, id) {
@@ -47,8 +65,12 @@ export async function editClient(client, id) {
       'Content-Type':'application/json',
     }
   });
-  const result = await response.json();
-  const processedObj = getProcessedListObj(result);
+  if (response.ok) {
+    const result = await response.json();
+    const processedObj = getProcessedListObj(result);
 
-  return processedObj;
+    return processedObj;
+  } else {
+    return response.status;
+  }
 }

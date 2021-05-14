@@ -37,19 +37,13 @@ export function createTableThead(title) {
   const thead = createElement('thead');
   const tr = createElement('tr');
   const entries = Object.entries(title);
-  let step = 1;
 
   table.append(thead);
   thead.append(tr);
   entries.forEach(element => {
     const th = createElement('th', 'table__head-' + element[0], element[1]);
 
-    if (step === 6) { //если колонка под номером 6, то объединяем ее с 7
-      th.setAttribute('colspan', '2');
-    }
-
     tr.append(th);
-    step ++;
   });
 
   return table;
@@ -66,13 +60,32 @@ export function createTableTbody(table, arrData){
     entries.forEach(element => {
       //если это тип объект, значит это масссив объектов с контактными данными клиента
       if (typeof element[1] === 'object' ) {
-        //console.log(element[1]);
         const ul = getListContacts(element[1]); //получаем список всех контактных данных клиента
         const td = createElement('td', 'table__body-' + element[0]);
         td.append(ul);
         tr.append(td);
       } else {
-        const td = createElement('td', 'table__body-' + element[0], element[1]);
+        let td; //переменная для ячеек таблицы
+        //ищем значение дат и отделяем от времени. значение времени оборачиваем в span для стилизации
+        if (element[0] === 'dateNew' || element[0] === 'dateUpdate') {
+          const time = element[1].split(' ')[1];
+          const date = element[1].split(' ')[0];
+          const span = createElement('span', '', time);
+          td = createElement('td', 'table__body-' + element[0], date);
+          if (span.textContent.trim() !== 'undefined') {
+            td.append(span);
+          }
+          //проверка на содержание кнопок изменить/удалить. Их тоже помещаем в спан для стилизации
+        } else if (element[0] === 'editAndDelete') {
+          const editItem = element[1].split(' ')[0];
+          const deleteItem = element[1].split(' ')[1];
+          const spanEdit = createElement('span', 'table__body-edit', editItem);
+          const spanDelete = createElement('span', 'table__body-delete', deleteItem);
+          td = createElement('td', 'table__body-' + element[0]);
+          td.append(spanEdit, spanDelete);
+        } else { //все остальные элементы напрямую в ячейку
+          td = createElement('td', 'table__body-' + element[0], element[1]);
+        }
         tr.append(td);
       }
     });
@@ -115,20 +128,61 @@ function getListContacts(arrObj) {
 }
 //формируем попап для елементов списка
 function getPopupOther(li, obj) {
-  if (obj.type === "other") {//разбиваем строку на 2 элемента массива, если категория контактов "другие"
-    const str1 = obj.value.trim().split(" ")[0];
-    const str2 = obj.value.trim().split(" ")[1];
-    const link = createElement('a','', str2); //оборачиваем в ссылку вторую часть строки
-    link.setAttribute('href', `mailto:${str2}`);
+  // if (obj.type === "other") {//разбиваем строку на 2 элемента массива, если категория контактов "другие"
+  //   const str1 = obj.value.trim().split(" ")[0];
+  //   const str2 = obj.value.trim().split(" ")[1];
+  //   const link = createElement('a','', str2); //оборачиваем в ссылку вторую часть строки
+  //   link.setAttribute('href', `mailto:${str2}`);
 
-    const div = createElement('div', 'popup', str1 + " ");
-    div.append(link);
-    li.append(div);
-  } else {
-    const div = createElement('div', 'popup', obj.value);
-    li.append(div);
+  //   const div = createElement('div', 'popup', str1 + " ");
+  //   div.append(link);
+  //   li.append(div);
+  // } else {
+  //   const div = createElement('div', 'popup', obj.value);
+  //   li.append(div);
+  // }
+
+  let valuePopup; //объявляем переменные для записи значений и типов popup
+  let typePopup;
+  switch(obj.type) {
+    case 'phone':
+      valuePopup = obj.value;
+      typePopup = 'Телефон:'
+      break;
+    case 'email':
+      valuePopup = obj.value;
+      typePopup = 'Email:'
+      break;
+    case 'vk':
+      valuePopup = obj.value;
+      typePopup = 'VK:'
+      break;
+    case 'fb':
+      valuePopup = obj.value;
+      typePopup = 'Facebook:'
+      break;
+    default:
+      valuePopup = obj.value;
+      typePopup = 'Другое:'
+      break;
   }
 
+  const div = createElement('div', 'popup', typePopup + " ");
+  if (Boolean(~valuePopup.indexOf('@'))) {
+    const link = createElement('a','link-contact', valuePopup); //оборачиваем в ссылку
+    link.setAttribute('href', `mailto:${valuePopup}`);
+    div.append(link);
+  } else if (Boolean(~valuePopup.indexOf('.com'))) {
+    const link = createElement('a','link-contact', valuePopup);
+    link.setAttribute('href', valuePopup);
+    div.append(link);
+  } else {
+    const span = createElement('span', 'text-contact', valuePopup)
+    div.append(span);
+  }
+
+
+  li.append(div);
   return li;
 }
 //создание модального окна
@@ -191,6 +245,34 @@ export function createModal(id) {
     close,
     btnSave,
     btnAddContact,
+    wrapper
+  };
+}
+//модальное окно удаления объекта
+export function createModalDelete() {
+  const wrapper = createElement('div', 'control-panel__modal, modal');
+  const modal = createElement('div', 'modal__content, model__content-delete');
+  const wrapTitleBlock = createElement('div', 'modal__title-content');
+
+  //заголовок
+  const title = createElement('h3', 'modal__title', 'Удалить клиента');
+  const close = createElement('span', 'modal__close');
+
+  //тело
+  const content = createElement('p', 'modal__text', 'Вы действительно хотите удалить данного клиента?');
+  //кнопка удалить
+  const btnDelete = createElement('button', 'modal__button-save, btn', 'Удалить');
+  //кнопка отмена
+  const cansel = createElement('a', 'modal__button-cansel, btn', 'Отмена');
+
+  wrapTitleBlock.append(title, close);
+  modal.append(wrapTitleBlock, content, btnDelete, cansel);
+  wrapper.append(modal);
+
+  return {
+    close,
+    cansel,
+    btnDelete,
     wrapper
   };
 }
