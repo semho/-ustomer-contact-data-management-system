@@ -99,6 +99,10 @@ body {
   opacity: 0.7;
 }
 
+.table__head-id.is-reverse::after, .table__head-name.is-reverse::after, .table__head-dateNew.is-reverse::after, .table__head-dateUpdate.is-reverse::after {
+  background-image: url("../img/arrow_downward.svg");
+}
+
 .table__head-id:hover::after, .table__head-name:hover::after, .table__head-dateNew:hover::after, .table__head-dateUpdate:hover::after {
   opacity: 1;
   cursor: pointer;

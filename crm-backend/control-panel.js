@@ -4,11 +4,12 @@ import {createAppTitle, createTableThead, createTableTbody, createElement} from 
 import {eventNewModal, eventOnTable} from "./handlerFunctions.js";
 import {getListClients} from "./queryFunctions.js";
 import {validateErrorsServer} from "./validators.js";
+import {sortId, sortFullName, sortDateCreate, sortDateUpdate} from "./sorts.js";
 
 
 //массив для хранения объектов клиента, объект как пример пример
 let arrObjData = [
-  {id: "123456", name: "Скворцов Денис Юрьевич", dateNew: "21.02.2021", dateUpdate: "21.02.2021", contacts:
+  {id: "123456", name: "Скворцов Денис Юрьевич", dateNew: "21.02.2021 10:00", dateUpdate: "21.02.2021 10:00", contacts:
     [
       { type: 'phone',
         value: '+7 (985) 443-00-00'},
@@ -62,6 +63,20 @@ async function createControlPanelApp(container, title) {
 
     //обработчик событий на всю таблицу для делигирования
     controlPanelBody.addEventListener('click', (event) => eventOnTable(container, arrObjData, controlPanelHead, event));
+
+    //сортировка по id
+    const titleId = controlPanelHead.querySelector('.table__head-id');
+    titleId.addEventListener('click', () => sortId(controlPanelBody, arrObjData, titleId));
+    //сортировка по ФИО
+    const titleFullName = controlPanelHead.querySelector('.table__head-name');
+    titleFullName.addEventListener('click', () => sortFullName(controlPanelBody, arrObjData, titleFullName));
+    //сортировка по дате создания
+    const titleDateCreate = controlPanelHead.querySelector('.table__head-dateNew');
+    titleDateCreate.addEventListener('click', () => sortDateCreate(controlPanelBody, arrObjData, titleDateCreate));
+    //сортировка по дате обновления
+    const titleDateUpdate = controlPanelHead.querySelector('.table__head-dateUpdate');
+    titleDateUpdate.addEventListener('click', () => sortDateUpdate(controlPanelBody, arrObjData, titleDateUpdate));
+
   //а, если ответ от сервера не массив, то
   } else {
     //отправляем на проверку

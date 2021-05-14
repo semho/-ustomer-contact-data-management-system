@@ -184,7 +184,7 @@ async function saveClient(modal, arrObjData, headerTable, id, event) {
   }
 }
 
-function updateTable(headerTable, arrObjData) {
+export function updateTable(headerTable, arrObjData) {
   //удаляем прежнее тело таблицы
   headerTable.tBodies[0].remove();
   //и вновь создаем
