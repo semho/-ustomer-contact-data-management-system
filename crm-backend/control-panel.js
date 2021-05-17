@@ -88,7 +88,4 @@ async function createControlPanelApp(container, title) {
   }
 };
 
-
-
-
 window.createControlPanelApp = createControlPanelApp;

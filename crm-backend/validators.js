@@ -40,8 +40,8 @@ export function validateLastName(string) {
 export function validateErrorsServer(numberError) {
 
   let error; //переменная для записи строки ошибок
-
   let numberErrorServer = Boolean(~String(numberError).indexOf(String(5))); //проверяем на совпадения с ошибкой 5хх
+
   if (numberErrorServer) {
     numberErrorServer = 500;
   } else {

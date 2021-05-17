@@ -20,7 +20,7 @@ export function sortId(table, arrObjData, btn) {
 //функция сортировки по ФИО
 export function sortFullName(table, arrObjData, btn) {
   const arrObjSort = arrObjData.slice();
-
+  //используем компоратор
   function compare(a, b) {
     const genreA = a.name.toUpperCase();
     const genreB = b.name.toUpperCase();
@@ -46,7 +46,7 @@ export function sortFullName(table, arrObjData, btn) {
   }
   sort = !sort;
 }
-
+//сортировка по дате создания
 export function sortDateCreate(table, arrObjData, btn) {
   const arrObjSort = arrObjData.slice();
 
@@ -84,7 +84,7 @@ export function sortDateCreate(table, arrObjData, btn) {
   }
   sort = !sort;
 }
-
+//сортировка по дате редактирования
 export function sortDateUpdate(table, arrObjData, btn) {
   const arrObjSort = arrObjData.slice();
 

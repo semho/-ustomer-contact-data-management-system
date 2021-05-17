@@ -168,10 +168,12 @@ function getPopupOther(li, obj) {
   }
 
   const div = createElement('div', 'popup', typePopup + " ");
+  //если есть символ @, значит это Email
   if (Boolean(~valuePopup.indexOf('@'))) {
     const link = createElement('a','link-contact', valuePopup); //оборачиваем в ссылку
     link.setAttribute('href', `mailto:${valuePopup}`);
     div.append(link);
+  //если есть совпадение по ".com", значит это ссылка
   } else if (Boolean(~valuePopup.indexOf('.com'))) {
     const link = createElement('a','link-contact', valuePopup);
     link.setAttribute('href', valuePopup);
@@ -180,7 +182,6 @@ function getPopupOther(li, obj) {
     const span = createElement('span', 'text-contact', valuePopup)
     div.append(span);
   }
-
 
   li.append(div);
   return li;
@@ -281,6 +282,7 @@ export function createModalDelete() {
 //classNameInput - класс поля ввода
 //placeholderValue - значение placeholder
 //required - обязательно ли поле к заполнению. Если true, то добаляем звездочку к placeholder
+//nameInput - название поле ввода
 function createInputFormGroup(classNamePrefix, classNameInput, placeholderValue, required, nameInput = '') {
   const wrapFormGroup = createElement('div', `${classNamePrefix}form-group`);
   const input = createElement('input', classNameInput);

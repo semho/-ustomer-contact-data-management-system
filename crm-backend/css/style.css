@@ -1,4 +1,17 @@
 
+:root {
+  --color-font-main: #333333;
+  --color-background: #f5f5f5;
+  --color-white: #ffffff;
+  --color-gray: #B0B0B0;
+  --color-lite-gray: #C8C5D1;
+  --color-main: #9873FF;
+  --color-red: #F06A4D;
+  --color-link: #B89EFF;
+  --color-btn-main: #8052FF;
+  --color-background-add-contact: #F4F3F6;
+}
+
 * {
   box-sizing: border-box;
 }
@@ -18,16 +31,16 @@ img {
 }
 
 body {
-  background: #f5f5f5;
+  background: var(--color-background);
   font-size: 14px;
-  color: #333333;
+  color: var(--color-font-main);
 }
 
 /*------ Header ------*/
 
 .header {
   margin-bottom: 40px;
-  background: #ffffff;
+  background: var(--color-white);
   box-shadow: 0px 9.03012px 27.0904px rgba(176, 190, 197, 0.32), 0px 3.38629px 5.64383px rgba(176, 190, 197, 0.32);
 }
 
@@ -50,11 +63,11 @@ body {
 }
 
 .header__input::placeholder {
-  color: #B0B0B0;
+  color: var(--color-gray);
 }
 
 .form-control:focus {
-  border-color: #9873FF;
+  border-color: var(--color-main);
   box-shadow:  0px 0px 4px 4px rgba(152, 115, 255, 0.2);
 }
 
@@ -80,7 +93,7 @@ body {
   font-size: 12px;
   font-weight: 400;
   line-height: 16px;
-  color: #B0B0B0;
+  color: var(--color-gray);
 }
 
 .control-panel__table thead tr th:hover:nth-child(-1n+4) {
@@ -112,11 +125,11 @@ body {
   content: 'А-Я';
   width: 30px;
   padding-left: 10px;
-  color: #9873FF;
+  color: var(--color-main);
 }
 
 .control-panel__table tbody tr{
-  background: #ffffff;
+  background: var(--color-white);
 }
 
 .table td, .table th {
@@ -132,7 +145,7 @@ body {
 
 .table__body-dateNew span, .table__body-dateUpdate span {
   margin-left: 10px;
-  color: #B0B0B0;
+  color: var(--color-gray);
 }
 
 .table__list-contact {
@@ -159,12 +172,12 @@ body {
 }
 
 .table__body-edit:hover {
-  color:#9873FF;
+  color:var(--color-main);
   cursor: pointer;
 }
 
 .table__body-delete:hover {
-  color: #F06A4D;
+  color: var(--color-red);
   cursor: pointer;
 }
 /*
@@ -240,7 +253,7 @@ body {
   line-height: 16px;
   width: max-content;
   background: black;
-  color: #ffffff;
+  color: var(--color-white);
   transform: translateX(-50%);
   opacity: 0;
   visibility: hidden;
@@ -271,7 +284,7 @@ body {
 
 .table__list-contact .link-contact{
   font-weight: 700;
-  color: #B89EFF;
+  color: var(--color-link);
 }
 
 .table__list-contact .text-contact{
@@ -283,15 +296,15 @@ body {
   padding: 12.5px 26.5px;
   width: 220px;
   border-radius: 0;
-  border: 1px solid #9873FF;
-  color: #9873FF;
+  border: 1px solid var(--color-main);
+  color: var(--color-main);
   white-space: nowrap;
 }
 
 .control-panel__button:hover, .control-panel__button:active {
-  background-color: #8052FF;
-  border: 1px solid #8052FF;
-  color: #ffffff;
+  background-color: var(--color-btn-main);
+  border: 1px solid var(--color-btn-main);
+  color: var(--color-white);
 }
 
 .control-panel__button:focus {
@@ -322,7 +335,7 @@ body {
   font-size: 8px;
   font-weight: 600;
   line-height: 11px;
-  color: #333333;
+  color: var(--color-font-main);
 }
 
 
@@ -350,7 +363,7 @@ body {
   left: 50%;
   width: 450px;
   min-height: 400px;
-  background-color: #ffffff;
+  background-color: var(--color-white);
   transform: translate(-50%, -50%);
   box-sizing: border-box;
 }
@@ -409,7 +422,7 @@ body {
   font-size: 14px;
   line-height: 19px;
   font-weight: 600;
-  color: #333333;
+  color: var(--color-font-main);
 }
 
 .modal__form-group .form-control:focus {
@@ -434,12 +447,12 @@ body {
   bottom: 4px;
   font-size: 14px;
   line-height: 19px;
-  color: #B0B0B0;
+  color: var(--color-gray);
   pointer-events:none;
 }
 
 .modal__star {
-  color: #9873FF;
+  color: var(--color-main);
   font-weight: 600;
 }
 
@@ -462,7 +475,7 @@ body {
   font-size: 14px;
   font-weight: 600;
   line-height: 19px;
-  color: #333333;
+  color: var(--color-font-main);
   transition: color 0.2s ease-in-out;
 }
 
@@ -479,7 +492,7 @@ body {
   transition: background 0.2s ease-in-out;
 }
 .add-contact__button:hover {
-  color: #9873FF;
+  color: var(--color-main);
 }
 .add-contact__button:hover::before {
   background-image: url('../img/add_circle_outline_fill.svg');
@@ -490,21 +503,21 @@ body {
   padding: 12.5px 35px;
   align-self: center;
   max-width: 147px;
-  background-color: #9873FF;
+  background-color: var(--color-main);
   border-radius: 0;
   font-size: 14px;
   font-weight: 600;
   line-height: 19px;
-  color: #ffffff;
+  color: var(--color-white);
 }
 
 .modal__button-save:hover {
-  background-color: #B89EFF;
-  color: #ffffff;
+  background-color: var(--color-link);
+  color: var(--color-white);
 }
 
 .modal__button-save:focus, .modal__button-save:active {
-  background-color: #8052FF;
+  background-color: var(--color-btn-main);
   box-shadow: 0px 0px 4px 4px rgb(152 115 255 / 40%);
 }
 
@@ -530,22 +543,22 @@ body {
   height: 37px;
   width: 100%;
   border-radius: 0;
-  border-color: #C8C5D1;
+  border-color: var(--color-lite-gray);
   font-size: 12px;
   line-height: 22px;
-  color: #333333;
+  color: var(--color-font-main);
   text-align: left;
   background: none;
   background-color: #E7E5EB;
 }
 
 .add-contact__select:focus {
-  border-color: #C8C5D1;
+  border-color: var(--color-lite-gray);
   box-shadow: none;
 }
 
 .add-contact__select:focus option {
-  background-color: #F4F3F6;
+  background-color: var(--color-background-add-contact);
 }
 
 .add-contact__select::after {
@@ -573,16 +586,16 @@ body {
   border-radius: 0;
   background-color: transparent;
   font-weight: 600;
-  color: #333333;
+  color: var(--color-font-main);
 }
 
 .add-contact__input::placeholder {
   font-weight: normal;
-  color: #B0B0B0;
+  color: var(--color-gray);
 }
 
 .add-contact__input:focus {
-  border-color: #C8C5D1;
+  border-color: var(--color-lite-gray);
   box-shadow: none;
 }
 
@@ -591,7 +604,7 @@ body {
   width: 27px;
   height: 100%;
   border-radius: 0;
-  border: 1px solid #C8C5D1;
+  border: 1px solid var(--color-lite-gray);
   align-self: center;
   background-color: #E7E5EB;
   background-image: url('../img/delete.svg');
@@ -603,7 +616,7 @@ body {
 
 .add-contact__btnDelete:hover {
   background-image: url('../img/deleteHover.svg');
-  border-color: #F06A4D;
+  border-color: var(--color-red);
 }
 
 .add-contact__dropdown {
@@ -616,11 +629,11 @@ body {
   min-width: 123px;
   font-size: 12px;
   line-height: 16px;
-  color: #333333;
+  color: var(--color-font-main);
   border-radius: 0;
-  border: 1px solid #C8C5D1;
+  border: 1px solid var(--color-lite-gray);
   border-top: none;
-  background: #F4F3F6;
+  background: var(--color-background-add-contact);
 }
 
 .add-contact__option {
@@ -647,7 +660,7 @@ body {
 .modal__error {
   font-size: 10px;
   line-height: 14px;
-  color: #F06A4D;
+  color: var(--color-red);
 }
 
 .modal__error:last-of-type {
@@ -699,7 +712,7 @@ body {
   opacity: 0;
   position: absolute;
   top: 102px;
-  background-color: #ffffff;
+  background-color: var(--color-white);
   overflow: hidden;
   z-index: -1;
 }
