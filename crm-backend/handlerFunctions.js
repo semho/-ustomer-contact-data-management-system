@@ -4,6 +4,10 @@ import {createModal, createGroupSelect, createTableTbody, createModalDelete} fro
 import {createSelect} from "./customSelect.js";
 import {validateName, validateLastName, validateErrorsServer} from "./validators.js";
 import {createClient, deleteClient, getClient, editClient} from "./queryFunctions.js";
+import {showSearch} from "./filters.js";
+
+// переменная под setTimeout
+let timeoutId = '';
 
 //показываем скрытые контакты
 function showContacts(btnMore) {
@@ -363,3 +367,8 @@ async function eventDeleteClient(modal, arrObjData, idDelete) {
     modal.btnDelete.before(error);
   }
 }
+//функция обработчика поискового запроса
+export function timeDelay(input, controlPanelHead, arrObjData) {
+  //передаем функцию с задержкой и содержимым поискового запроса
+  timeoutId = window.setTimeout(showSearch, 300, input.value, controlPanelHead, arrObjData);
+ }

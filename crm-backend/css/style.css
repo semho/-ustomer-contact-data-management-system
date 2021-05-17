@@ -733,9 +733,27 @@ body {
 
 /*------------------*/
 
-@media (min-width: 320px) {
+@media (min-width: 280px) {
+
   .container, .container-md, .container-sm {
-    max-width: 758px;
+    width: 758px;
+  }
+
+  .container.header__container {
+    max-width: 100%;
+  }
+
+  .header__container {
+    flex-direction: column;
+    height: 40px;
+  }
+
+  .header__input {
+    display: none;
+  }
+
+  .header__picture {
+    padding-top: 8px;
   }
 
   .table__head-name {
@@ -760,6 +778,20 @@ body {
 @media (min-width: 768px) {
   .container, .container-md, .container-sm {
     max-width: 758px;
+    width: 100%;
+  }
+
+  .header__container {
+    flex-direction: row;
+    height: 90px;
+  }
+
+  .header__picture {
+    padding-top: 0;
+  }
+
+  .header__input {
+    display: block;
   }
 
   .table__head-name {

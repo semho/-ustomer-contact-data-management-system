@@ -1,13 +1,12 @@
 'use strict';
 
 import {createAppTitle, createTableThead, createTableTbody, createElement} from "./createElements.js";
-import {eventNewModal, eventOnTable} from "./handlerFunctions.js";
+import {eventNewModal, eventOnTable, timeDelay} from "./handlerFunctions.js";
 import {getListClients} from "./queryFunctions.js";
 import {validateErrorsServer} from "./validators.js";
 import {sortId, sortFullName, sortDateCreate, sortDateUpdate} from "./sorts.js";
 
-
-//массив для хранения объектов клиента, объект как пример пример
+//массив для хранения объектов клиента, объект как пример
 let arrObjData = [
   {id: "123456", name: "Скворцов Денис Юрьевич", dateNew: "21.02.2021 10:00", dateUpdate: "21.02.2021 10:00", contacts:
     [
@@ -77,6 +76,10 @@ async function createControlPanelApp(container, title) {
     const titleDateUpdate = controlPanelHead.querySelector('.table__head-dateUpdate');
     titleDateUpdate.addEventListener('click', () => sortDateUpdate(controlPanelBody, arrObjData, titleDateUpdate));
 
+    //вешаем обработчик событий на инпут. событие change ждет когда пользователь изменит данные
+    const inputSearch = document.querySelector('.header__input');
+    inputSearch.addEventListener('change', () => timeDelay(inputSearch, controlPanelHead, arrObjData));
+
   //а, если ответ от сервера не массив, то
   } else {
     //отправляем на проверку
@@ -84,6 +87,8 @@ async function createControlPanelApp(container, title) {
     container.append(createAppTitle(error.textContent));
   }
 };
+
+
 
 
 window.createControlPanelApp = createControlPanelApp;
