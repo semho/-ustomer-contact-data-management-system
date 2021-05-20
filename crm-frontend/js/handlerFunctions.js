@@ -125,10 +125,10 @@ async function saveClient(modal, arrObjData, headerTable, id, event) {
 
     //заглушка, пока ждем ответ сервера
     headerTable.classList.add('loading');
-    const widthTable = headerTable.tBodies[0].offsetWidth;
+    //const widthTable = headerTable.tBodies[0].offsetWidth;
     const heightTable = headerTable.tBodies[0].offsetHeight;
     document.querySelector('.control-panel__spiner').style.height = heightTable + 'px';
-    document.querySelector('.control-panel__spiner').style.width = widthTable + 'px';
+    //document.querySelector('.control-panel__spiner').style.width = widthTable + 'px';
 
     //массив для сохранения объектов типа контактов
     const arrTypeContacts = [];

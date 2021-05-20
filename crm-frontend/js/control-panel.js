@@ -30,28 +30,36 @@ let arrObjData = [
 ];
 
 async function createControlPanelApp(container, title) {
+  //заголовок приложения
+  const controlPanelTitle = createAppTitle(title);
+  container.append(controlPanelTitle);
+
+  //заголовки колонок таблицы
+  const titleTable = {id: "ID", name: "Фамилия Имя Отчество", dateNew: "Дата и время создания", dateUpdate: "Последние изменения", contacts: "Контакты", action: "Действия"};
+  const controlPanelHead = createTableThead(titleTable);
+  container.append(controlPanelHead);
+
+  //добавляем див заглушка таблицы с анимированным спинером.
+  controlPanelHead.classList.add('loading');
+  controlPanelHead.append(createElement('div', 'control-panel__spiner'));
+
   //делаем запрос к серверу для получения списка клиентов
   const queryGetList = await getListClients();
+
+  //удаляем заглушку предзагрузки
+  controlPanelHead.classList.remove('loading');
+
   //если в ответ мы получаем массив, то
   if (Array.isArray(queryGetList)) {
     //добавляем наш список объектов к исходному списку
     arrObjData.push(...queryGetList);
 
-    //заголовок приложения
-    const controlPanelTitle = createAppTitle(title);
-    container.append(controlPanelTitle);
-
-    //заголовки колонок таблицы
-    const titleTable = {id: "ID", name: "Фамилия Имя Отчество", dateNew: "Дата и время создания", dateUpdate: "Последние изменения", contacts: "Контакты", action: "Действия"};
-    const controlPanelHead = createTableThead(titleTable);
-    container.append(controlPanelHead);
-
     //тело таблицы
     const controlPanelBody = createTableTbody(controlPanelHead, arrObjData);
     container.append(controlPanelBody);
 
-    //добавляем див заглушка таблицы с анимированным спинером. появляется при долгом ожидаие от сервера при создании нового клиента
-    controlPanelBody.after(createElement('div', 'control-panel__spiner'));
+    
+    //controlPanelBody.after(createElement('div', 'control-panel__spiner'));
 
     //кнопка добавления клиента
     const btnAddClient = createElement("button", "control-panel__button, btn", "Добавить клиента");
