@@ -1,7 +1,7 @@
 'use strict';
 
 import {createAppTitle, createTableThead, createTableTbody, createElement} from "./createElements.js";
-import {eventNewModal, eventOnTable, timeDelay} from "./handlerFunctions.js";
+import {eventNewModal, eventOnTable, debounce, onChange} from "./handlerFunctions.js";
 import {getListClients} from "./queryFunctions.js";
 import {validateErrorsServer} from "./validators.js";
 import {sortId, sortFullName, sortDateCreate, sortDateUpdate} from "./sorts.js";
@@ -42,7 +42,6 @@ async function createControlPanelApp(container, title) {
   //добавляем див заглушка таблицы с анимированным спинером.
   controlPanelHead.classList.add('loading');
   controlPanelHead.append(createElement('div', 'control-panel__spiner'));
-
   //делаем запрос к серверу для получения списка клиентов
   const queryGetList = await getListClients();
 
@@ -57,8 +56,6 @@ async function createControlPanelApp(container, title) {
     //тело таблицы
     const controlPanelBody = createTableTbody(controlPanelHead, arrObjData);
     container.append(controlPanelBody);
-
-    
     //controlPanelBody.after(createElement('div', 'control-panel__spiner'));
 
     //кнопка добавления клиента
@@ -84,9 +81,12 @@ async function createControlPanelApp(container, title) {
     const titleDateUpdate = controlPanelHead.querySelector('.table__head-dateUpdate');
     titleDateUpdate.addEventListener('click', () => sortDateUpdate(controlPanelBody, arrObjData, titleDateUpdate));
 
-    //вешаем обработчик событий на инпут. событие change ждет когда пользователь изменит данные
+    //вешаем обработчик событий на инпут. создаем функцию debounce
     const inputSearch = document.querySelector('.header__input');
-    inputSearch.addEventListener('change', () => timeDelay(inputSearch, controlPanelHead, arrObjData));
+    //inputSearch.addEventListener('change', () => timeDelay(inputSearch, controlPanelHead, arrObjData));
+    const onChangeDebounce = debounce(onChange, 300);
+    inputSearch.addEventListener('input', onChangeDebounce);
+    
 
   //а, если ответ от сервера не массив, то
   } else {
@@ -95,5 +95,6 @@ async function createControlPanelApp(container, title) {
     container.append(createAppTitle(error.textContent));
   }
 };
+
 
 window.createControlPanelApp = createControlPanelApp;

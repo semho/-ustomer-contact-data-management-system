@@ -3,11 +3,25 @@
 import {createModal, createGroupSelect, createTableTbody, createModalDelete} from "./createElements.js";
 import {createSelect} from "./customSelect.js";
 import {validateName, validateLastName, validateErrorsServer} from "./validators.js";
-import {createClient, deleteClient, getClient, editClient} from "./queryFunctions.js";
+import {getListClients, createClient, deleteClient, getClient, editClient} from "./queryFunctions.js";
 import {showSearch} from "./filters.js";
 
-// переменная под setTimeout
-let timeoutId = '';
+//обработка поискового запроса
+export async function onChange(e) {
+  const queryGetList = await getListClients();
+  const table = document.querySelector('.table ');
+  showSearch(e.target.value, table, queryGetList);
+}
+
+//функция обертка debounce для непрерывного ввода
+export const debounce = (fn, ms) => {
+  let timeout;
+  return function () {
+    const fnCall = () => {fn.apply(this, arguments)}
+    clearTimeout(timeout);
+    timeout = setTimeout(fnCall, ms);
+  }
+}
 
 //показываем скрытые контакты
 function showContacts(btnMore) {
@@ -51,8 +65,6 @@ export function eventNewModal(container, arrObjData, headerTable, id) {
   modal.btnAddContact.addEventListener('click', () => createNewTypeContact(typeContacts, modal.btnAddContact));
   //вешаем обработчик на кнопку сохранения  клиента
   modal.btnSave.addEventListener('click', (event) => saveClient(modal, arrObjData, headerTable, id, event));
-
-
 }
 //функция на изменение полей ввода фио клиента
 function changeValueInput() {
@@ -367,8 +379,4 @@ async function eventDeleteClient(modal, arrObjData, idDelete) {
     modal.btnDelete.before(error);
   }
 }
-//функция обработчика поискового запроса
-export function timeDelay(input, controlPanelHead, arrObjData) {
-  //передаем функцию с задержкой и содержимым поискового запроса
-  timeoutId = window.setTimeout(showSearch, 300, input.value, controlPanelHead, arrObjData);
- }
+
