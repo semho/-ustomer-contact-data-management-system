@@ -4,8 +4,15 @@ import {getProcessedListObj} from "./handlerFunctions.js";
 
 const URL_CLIENTS = 'http://localhost:3000/api/clients';
 //список клиентов
-export async function getListClients() {
-  const response = await fetch(URL_CLIENTS);
+export async function getListClients(params) {
+  let response;
+
+  if (params) {
+    response = await fetch(`${URL_CLIENTS}/?search=${params}`);
+  } else {
+    response = await fetch(URL_CLIENTS);
+  }
+
   if (response.ok) {
     const result = await response.json();
     const processedListObj = getProcessedListObj(result);

@@ -8,9 +8,11 @@ import {showSearch} from "./filters.js";
 
 //обработка поискового запроса
 export async function onChange(e) {
-  const queryGetList = await getListClients();
+  const queryGetList = await getListClients(e.target.value);
   const table = document.querySelector('.table ');
-  showSearch(e.target.value, table, queryGetList);
+  //поисковой запрос без query параметра
+  //showSearch(e.target.value, table, queryGetList);
+  updateTable(table, queryGetList);
 }
 
 //функция обертка debounce для непрерывного ввода
