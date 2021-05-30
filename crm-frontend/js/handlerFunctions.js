@@ -6,6 +6,8 @@ import {validateName, validateLastName, validateErrorsServer} from "./validators
 import {getListClients, createClient, deleteClient, getClient, editClient} from "./queryFunctions.js";
 import {showSearch} from "./filters.js";
 
+let idTimer;
+
 //обработка поискового запроса
 export async function onChange(e) {
   const queryGetList = await getListClients(e.target.value);
@@ -37,10 +39,15 @@ export function eventNewModal(container, arrObjData, headerTable, id) {
   //Если модальное окно уже есть, удалим его
   if (document.querySelector('.control-panel__modal')) {
     document.querySelector('.control-panel__modal').remove();
+    clearTimeout(idTimer);
   }
   //создаем модальное окно
   const modal = createModal(id);
   container.append(modal.wrapper);
+  
+  //добаляем класс к модальному окну для анимации
+  idTimer = setTimeout(() => document.querySelector('.modal__content').classList.add('modal__active'), 100);
+  
   //обработчики событий закрытия модального окна
   if (!id) {
     modal.cansel.addEventListener('click', () => modal.wrapper.remove());
