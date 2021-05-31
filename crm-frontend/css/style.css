@@ -615,6 +615,11 @@ body {
   box-shadow: none;
 }
 
+.add-contact__input-group .form-control.error-border:focus {
+  border-color: rgba(240, 106, 77, 0.5);
+}
+
+
 .add-contact__btnDelete {
   margin-left: -1px;
   width: 27px;

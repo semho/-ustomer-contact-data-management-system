@@ -310,6 +310,7 @@ export function createGroupSelect(select, value) {
     input.value = value;
   }
   input.placeholder = 'Введите данные контакта';
+  input.name = 'data-contact';
   //кнопка удаления, изначально скрыта, если нет переданного аргумента value
   let btn = '';
   if (!value) {

@@ -83,8 +83,8 @@ async function createControlPanelApp(container, title) {
 
     //вешаем обработчик событий на инпут. создаем функцию debounce
     const inputSearch = document.querySelector('.header__input');
-    //inputSearch.addEventListener('change', () => timeDelay(inputSearch, controlPanelHead, arrObjData));
     const onChangeDebounce = debounce(onChange, 300);
+    
     inputSearch.addEventListener('input', onChangeDebounce);
     
 

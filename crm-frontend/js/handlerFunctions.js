@@ -1,8 +1,8 @@
 'use strict';
 
-import {createModal, createGroupSelect, createTableTbody, createModalDelete} from "./createElements.js";
+import {createModal, createGroupSelect, createTableTbody, createModalDelete, createElement} from "./createElements.js";
 import {createSelect} from "./customSelect.js";
-import {validateName, validateLastName, validateErrorsServer} from "./validators.js";
+import {validateName, validateLastName, validateErrorsServer, validateDataTypeContact} from "./validators.js";
 import {getListClients, createClient, deleteClient, getClient, editClient} from "./queryFunctions.js";
 import {showSearch} from "./filters.js";
 
@@ -75,6 +75,7 @@ export function eventNewModal(container, arrObjData, headerTable, id) {
   //вешаем обработчик на кнопку сохранения  клиента
   modal.btnSave.addEventListener('click', (event) => saveClient(modal, arrObjData, headerTable, id, event));
 }
+
 //функция на изменение полей ввода фио клиента
 function changeValueInput() {
   if (this.value !== '') {
@@ -115,8 +116,10 @@ function createNewTypeContact(typeContacts, btnAddContact, value, type) {
 function changeInputTypeContact(selectGroup) {
   if (selectGroup.input.value !== '') {
     selectGroup.btn.classList.remove('d-none');
+    selectGroup.input.classList.remove('error-border');
   } else {
     selectGroup.btn.classList.add('d-none');
+    selectGroup.input.classList.add('error-border');
   }
 }
 
@@ -124,9 +127,9 @@ function changeInputTypeContact(selectGroup) {
 async function saveClient(modal, arrObjData, headerTable, id, event) {
   event.preventDefault();
   //собираем поля ФИО формы модального окна
-  const secondName = modal.wrapper.querySelector('[name = secondName]').value.trim();
-  const firstName = modal.wrapper.querySelector('[name = name]').value.trim();
-  const lastName = modal.wrapper.querySelector('[name = lastName]').value.trim();
+  const secondName = modal.wrapper.querySelector('[name = secondName]');
+  const firstName = modal.wrapper.querySelector('[name = name]');
+  const lastName = modal.wrapper.querySelector('[name = lastName]');
   //валидация полей формы ФИО
   const resultErrorValidateName = validateName(firstName, "Имя", "name");
   const resultErrorValidateSecondName = validateName(secondName, "Фамилия", "secondName");
@@ -141,8 +144,18 @@ async function saveClient(modal, arrObjData, headerTable, id, event) {
   if (resultErrorValidateLastName) {
     modal.btnSave.before(resultErrorValidateLastName);
   }
+
+  //получаем данные полей типа контакта
+  const dataType = modal.wrapper.querySelectorAll('[name = data-contact]');
+  //проверяем их на заполнение
+  const resultErrorValidateDataType = validateDataTypeContact(dataType);
+  //если ошибки есть, выводим их
+  if (resultErrorValidateDataType) {
+    modal.btnSave.before(resultErrorValidateDataType);
+  }
+
   //если ошибок нет
-  if (!resultErrorValidateName && !resultErrorValidateSecondName && !resultErrorValidateLastName) {
+  if (!resultErrorValidateName && !resultErrorValidateSecondName && !resultErrorValidateLastName && !resultErrorValidateDataType) {
 
     //заглушка, пока ждем ответ сервера
     headerTable.classList.add('loading');
@@ -354,6 +367,10 @@ function modalDelete(container, arrObjData, idDelete) {
   //создаем модальное окно
   const modal = createModalDelete();
   container.append(modal.wrapper);
+
+  //добаляем класс к модальному окну для анимации
+  idTimer = setTimeout(() => document.querySelector('.modal__content').classList.add('modal__active'), 100);
+
   //обработчики закрытия модального окна
   modal.close.addEventListener('click', () => modal.wrapper.remove());
   modal.cansel.addEventListener('click', () => modal.wrapper.remove());
