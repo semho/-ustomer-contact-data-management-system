@@ -6,7 +6,7 @@ import {validateName, validateLastName, validateErrorsServer, validateDataTypeCo
 import {getListClients, createClient, deleteClient, getClient, editClient} from "./queryFunctions.js";
 import {showSearch} from "./filters.js";
 
-let idTimer;
+let requestId;
 
 //сохраняем адресную строку в буфер
 export function saveLinkHash() {
@@ -59,15 +59,27 @@ export function eventNewModal(container, arrObjData, headerTable, id) {
   //Если модальное окно уже есть, удалим его
   if (document.querySelector('.control-panel__modal')) {
     document.querySelector('.control-panel__modal').remove();
-    clearTimeout(idTimer);
+    // clearTimeout(idTimer);
+    cancelAnimationFrame(requestId);
   }
   //создаем модальное окно
   const modal = createModal(id);
   container.append(modal.wrapper);
   
-  //добаляем класс к модальному окну для анимации
-  idTimer = setTimeout(() => document.querySelector('.modal__content').classList.add('modal__active'), 100);
-  
+
+  //анимация модального окна
+  requestId = animate({
+    duration: 300,
+    timing(timeFraction) {
+      return timeFraction;
+    },
+    draw(progress) {
+      const modal = document.querySelector('.modal__content');
+      modal.style.opacity = progress;
+      modal.style.transform = 'scale(' + progress + ')';
+    }
+  });
+
   //обработчики событий закрытия модального окна
   if (!id) {
     modal.cansel.addEventListener('click', () => modal.wrapper.remove());
@@ -428,8 +440,18 @@ function modalDelete(container, arrObjData, idDelete) {
   const modal = createModalDelete();
   container.append(modal.wrapper);
 
-  //добаляем класс к модальному окну для анимации
-  idTimer = setTimeout(() => document.querySelector('.modal__content').classList.add('modal__active'), 100);
+  //анимация модального окна
+  requestId = animate({
+    duration: 300,
+    timing(timeFraction) {
+      return timeFraction;
+    },
+    draw(progress) {
+      const modal = document.querySelector('.modal__content');
+      modal.style.opacity = progress;
+      modal.style.transform = 'scale(' + progress + ')';
+    }
+  });
 
   //обработчики закрытия модального окна
   modal.close.addEventListener('click', () => modal.wrapper.remove());
@@ -466,3 +488,22 @@ async function eventDeleteClient(modal, arrObjData, idDelete) {
   }
 }
 
+//анимация
+function animate({duration, draw, timing}) {
+
+  let start = performance.now();
+
+  requestAnimationFrame(function animate(time) {
+    let timeFraction = (time - start) / duration;
+    if (timeFraction > 1) timeFraction = 1;
+
+    let progress = timing(timeFraction)
+
+    draw(progress);
+
+    if (timeFraction < 1) {
+      requestAnimationFrame(animate);
+    }
+
+  });
+}
