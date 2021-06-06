@@ -8,7 +8,7 @@ export function showSearch(valueSearch, controlPanelHead, arrObjData) {
   const filteredByName = filterByName(valueSearch, arrObjData);
   //фильтр по дате создания
   const filteredByCreationDate = filterByCreationDate(valueSearch, arrObjData);
-  //фильтр по дате редоктирования
+  //фильтр по дате редактирования
   const filteredByEditDate = filterByEditDate(valueSearch, arrObjData);
 
   //условия отображения поисковой фразы

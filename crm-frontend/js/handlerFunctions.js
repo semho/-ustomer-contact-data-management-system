@@ -8,6 +8,26 @@ import {showSearch} from "./filters.js";
 
 let idTimer;
 
+//сохраняем адресную строку в буфер
+export function saveLinkHash() {
+  navigator.clipboard.writeText(location.href)
+  .then(() => {
+    // Получилось!
+  })
+  .catch(err => {
+    console.log('Something went wrong', err);
+  });
+}
+
+
+//обработчик хэша
+export function hashchange(container, arrObjData, controlPanelHead) {
+  const hash = decodeURI(location.hash).substr(1);
+  //const parse = JSON.parse(hash);
+  
+  eventNewModal(container, arrObjData, controlPanelHead, hash)
+}
+
 //обработка поискового запроса
 export async function onChange(e) {
   const queryGetList = await getListClients(e.target.value);
@@ -291,6 +311,46 @@ export function eventOnTable(container, arrObjData, headerTable, event) {
   if (btnMore) {
     showContacts(btnMore);
   }
+
+  //получаем всю строку в таблице
+  const tr = getTarget('.control-panel__table tbody tr', event);
+  //передаем в функцию записи хэш
+  if (tr !== undefined) {
+    changeHash(tr);
+  }
+}
+//функция записи в хэш
+function changeHash(tr) {
+  //id
+  const id = tr.querySelector('.table__body-id').textContent;
+  // //имя
+  // const fullName = tr.querySelector('.table__body-name').textContent;
+  // //список типа контактов
+  // let list = tr.querySelectorAll('.table__body-contacts li');
+  // const arrTypeContact = [];
+
+  // list.forEach(element => {
+  //   const objTypeConacts = {};
+
+  //   const type = element.className.split('__')[1].split(' ')[0];
+
+  //   const value = element.querySelector('.text-contact') || element.querySelector('a');
+
+  //   if (value !== null) {
+  //     objTypeConacts.type = type;
+  //     objTypeConacts.value = value.textContent;
+  //     arrTypeContact.push(objTypeConacts);
+      
+      
+  //   }
+  // });
+
+  // const hash = {
+  //   id: id,
+  //   fullName: fullName,
+  //   contacts: arrTypeContact
+  // }
+  window.location.hash = id;
 }
 //получение id по событию клика на кнопку
 function getIdByTarget(classTarget, event) {

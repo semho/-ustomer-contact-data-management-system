@@ -302,13 +302,13 @@ body {
   white-space: nowrap;
 }
 
-.control-panel__button:hover, .control-panel__button:active {
+.control-panel__button:hover, .control-panel__button:active, .control-panel__button-hash:hover, .control-panel__button-hash:active {
   background-color: var(--color-btn-main);
   border: 1px solid var(--color-btn-main);
   color: var(--color-white);
 }
 
-.control-panel__button:focus {
+.control-panel__button:focus, .control-panel__button-hash:focus {
   box-shadow:0px 0px 4px 4px rgba(152, 115, 255, 0.4);
 }
 
@@ -327,6 +327,16 @@ body {
 
 }
 
+.control-panel__button-hash {
+  margin: auto auto 40px auto;
+  padding: 12.5px 26.5px;
+  width: 320px;
+  border-radius: 0;
+  border: 1px solid var(--color-main);
+  color: var(--color-main);
+  white-space: nowrap;
+}
+
 .list-contact__more {
   padding-top: 2px;
   padding-left: 2px;
@@ -339,7 +349,9 @@ body {
   color: var(--color-font-main);
 }
 
-
+.control-panel__table tbody tr:hover {
+  background-color: rgb(78%, 77%, 82%, 0.2);
+}
 /*------------------*/
 /*----- Modal ------*/
 .control-panel__modal {

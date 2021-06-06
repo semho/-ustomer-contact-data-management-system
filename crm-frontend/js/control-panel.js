@@ -1,7 +1,7 @@
 'use strict';
 
 import {createAppTitle, createTableThead, createTableTbody, createElement} from "./createElements.js";
-import {eventNewModal, eventOnTable, debounce, onChange} from "./handlerFunctions.js";
+import {eventNewModal, eventOnTable, debounce, onChange, hashchange, saveLinkHash} from "./handlerFunctions.js";
 import {getListClients} from "./queryFunctions.js";
 import {validateErrorsServer} from "./validators.js";
 import {sortId, sortFullName, sortDateCreate, sortDateUpdate} from "./sorts.js";
@@ -86,7 +86,20 @@ async function createControlPanelApp(container, title) {
     const onChangeDebounce = debounce(onChange, 300);
     
     inputSearch.addEventListener('input', onChangeDebounce);
+
+    //если в хэше при загрузке что-то есть -> создаем модальное окно
+    if (location.hash !== '') {
+      eventNewModal(container, arrObjData, controlPanelHead, location.hash.substr(1));
+    }
     
+    //обработчик хэша
+    window.addEventListener('hashchange', () => hashchange(container, arrObjData, controlPanelHead));
+
+    //кнопка для сохранения хэша
+    const btnSaveHash = createElement("button", "control-panel__button-hash, btn", "Скопировать адресную строку");
+    container.append(btnSaveHash);
+    //обработчик событий на кнопку "сохранения адресной строки"
+    btnSaveHash.addEventListener('click', () => saveLinkHash());
 
   //а, если ответ от сервера не массив, то
   } else {
@@ -95,6 +108,5 @@ async function createControlPanelApp(container, title) {
     container.append(createAppTitle(error.textContent));
   }
 };
-
 
 window.createControlPanelApp = createControlPanelApp;
