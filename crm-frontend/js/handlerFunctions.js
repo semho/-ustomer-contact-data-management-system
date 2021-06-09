@@ -185,7 +185,7 @@ async function saveClient(modal, arrObjData, headerTable, id, event) {
   if (resultErrorValidateDataType) {
     modal.btnSave.before(resultErrorValidateDataType);
   }
-
+  
   //если ошибок нет
   if (!resultErrorValidateName && !resultErrorValidateSecondName && !resultErrorValidateLastName && !resultErrorValidateDataType) {
 
@@ -214,9 +214,9 @@ async function saveClient(modal, arrObjData, headerTable, id, event) {
 
     //собираем данные клиента в объект
     const client = {
-      name: firstName,
-      surname: secondName,
-      lastName: lastName,
+      name: firstName.value,
+      surname: secondName.value,
+      lastName: lastName.value,
       contacts: arrTypeContacts
     };
 
