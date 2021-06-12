@@ -83,6 +83,10 @@ export function createTableTbody(table, arrData){
           const spanDelete = createElement('span', 'table__body-delete', deleteItem);
           td = createElement('td', 'table__body-' + element[0]);
           td.append(spanEdit, spanDelete);
+        } else if (element[0] === 'link') {
+          const link = createElement('span', 'table__body-textlink', element[1])
+          td = createElement('td', 'table__body-' + element[0]);
+          td.append(link);
         } else { //все остальные элементы напрямую в ячейку
           td = createElement('td', 'table__body-' + element[0], element[1]);
         }

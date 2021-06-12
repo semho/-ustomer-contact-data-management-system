@@ -181,6 +181,11 @@ body {
   color: var(--color-red);
   cursor: pointer;
 }
+
+.table__body-textlink:hover {
+  color:var(--color-main);
+  cursor: pointer;
+}
 /*
 .table__body-edit::before, .table__body-delete::before {
   position: absolute;
@@ -883,7 +888,7 @@ body {
   }
 
   .table__body-edit {
-    margin-right: 32px;
+    margin-right: 20px;
   }
 
   .table__body-delete {

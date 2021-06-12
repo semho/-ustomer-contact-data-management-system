@@ -24,8 +24,17 @@ export function saveLinkHash() {
 export function hashchange(container, arrObjData, controlPanelHead) {
   const hash = decodeURI(location.hash).substr(1);
   //const parse = JSON.parse(hash);
-  
-  eventNewModal(container, arrObjData, controlPanelHead, hash)
+  //создаем модальное окно
+  eventNewModal(container, arrObjData, controlPanelHead, hash);
+
+  //и сразу записываем ссылку в буфер обмена
+  navigator.clipboard.writeText(location.href)
+  .then(() => {
+    // Получилось!
+  })
+  .catch(err => {
+    console.log('Something went wrong', err);
+  });
 }
 
 //обработка поискового запроса
@@ -274,7 +283,8 @@ export function getProcessedListObj(result) {
         dateNew: newDate,
         dateUpdate: upDate,
         contacts: obj.contacts,
-        editAndDelete: "Изменить Удалить"
+        editAndDelete: "Изменить Удалить",
+        link: "Получить"
       })
     });
   } else {
@@ -286,7 +296,8 @@ export function getProcessedListObj(result) {
       dateNew: newDate,
       dateUpdate: upDate,
       contacts: result.contacts,
-      editAndDelete: "Изменить Удалить"
+      editAndDelete: "Изменить Удалить",
+      link: "Получить"
     })
   }
 
@@ -324,44 +335,16 @@ export function eventOnTable(container, arrObjData, headerTable, event) {
     showContacts(btnMore);
   }
 
-  //получаем всю строку в таблице
-  const tr = getTarget('.control-panel__table tbody tr', event);
-  //передаем в функцию записи хэш
-  if (tr !== undefined) {
-    changeHash(tr);
+  //получаем ссылку на кнопку
+  const link = getTarget('.table__body-textlink', event);
+  if (link !== undefined) {
+    changeHash(link);
   }
 }
 //функция записи в хэш
-function changeHash(tr) {
+function changeHash(link) {
   //id
-  const id = tr.querySelector('.table__body-id').textContent;
-  // //имя
-  // const fullName = tr.querySelector('.table__body-name').textContent;
-  // //список типа контактов
-  // let list = tr.querySelectorAll('.table__body-contacts li');
-  // const arrTypeContact = [];
-
-  // list.forEach(element => {
-  //   const objTypeConacts = {};
-
-  //   const type = element.className.split('__')[1].split(' ')[0];
-
-  //   const value = element.querySelector('.text-contact') || element.querySelector('a');
-
-  //   if (value !== null) {
-  //     objTypeConacts.type = type;
-  //     objTypeConacts.value = value.textContent;
-  //     arrTypeContact.push(objTypeConacts);
-      
-      
-  //   }
-  // });
-
-  // const hash = {
-  //   id: id,
-  //   fullName: fullName,
-  //   contacts: arrTypeContact
-  // }
+  const id = link.parentNode.parentNode.querySelector('.table__body-id').textContent;
   window.location.hash = id;
 }
 //получение id по событию клика на кнопку

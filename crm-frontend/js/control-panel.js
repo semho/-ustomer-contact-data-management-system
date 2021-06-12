@@ -25,17 +25,19 @@ let arrObjData = [
       { type: 'other',
         value: 'test@yandex.ru'},
     ],
-    editAndDelete: "Изменить Удалить"
+    editAndDelete: "Изменить Удалить",
+    link: "Получить"
   }
 ];
 
 async function createControlPanelApp(container, title) {
+  
   //заголовок приложения
   const controlPanelTitle = createAppTitle(title);
   container.append(controlPanelTitle);
 
   //заголовки колонок таблицы
-  const titleTable = {id: "ID", name: "Фамилия Имя Отчество", dateNew: "Дата и время создания", dateUpdate: "Последние изменения", contacts: "Контакты", action: "Действия"};
+  const titleTable = {id: "ID", name: "Фамилия Имя Отчество", dateNew: "Дата и время создания", dateUpdate: "Последние изменения", contacts: "Контакты", action: "Действия", link: "Ссылка"};
   const controlPanelHead = createTableThead(titleTable);
   container.append(controlPanelHead);
 
@@ -44,7 +46,7 @@ async function createControlPanelApp(container, title) {
   controlPanelHead.append(createElement('div', 'control-panel__spiner'));
   //делаем запрос к серверу для получения списка клиентов
   const queryGetList = await getListClients();
-
+  
   //удаляем заглушку предзагрузки
   controlPanelHead.classList.remove('loading');
 
@@ -94,13 +96,7 @@ async function createControlPanelApp(container, title) {
     
     //обработчик хэша
     window.addEventListener('hashchange', () => hashchange(container, arrObjData, controlPanelHead));
-
-    //кнопка для сохранения хэша
-    const btnSaveHash = createElement("button", "control-panel__button-hash, btn", "Скопировать адресную строку");
-    container.append(btnSaveHash);
-    //обработчик событий на кнопку "сохранения адресной строки"
-    btnSaveHash.addEventListener('click', () => saveLinkHash());
-
+    
   //а, если ответ от сервера не массив, то
   } else {
     //отправляем на проверку
