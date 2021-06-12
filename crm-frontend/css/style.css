@@ -790,6 +790,7 @@ body {
 
   .container, .container-md, .container-sm {
     width: 758px;
+    overflow-x: auto;
   }
 
   .container.header__container {
