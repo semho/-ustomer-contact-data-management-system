@@ -28,13 +28,7 @@ export function hashchange(container, arrObjData, controlPanelHead) {
   eventNewModal(container, arrObjData, controlPanelHead, hash);
 
   //и сразу записываем ссылку в буфер обмена
-  navigator.clipboard.writeText(location.href)
-  .then(() => {
-    // Получилось!
-  })
-  .catch(err => {
-    console.log('Something went wrong', err);
-  });
+  saveLinkHash();
 }
 
 //обработка поискового запроса
