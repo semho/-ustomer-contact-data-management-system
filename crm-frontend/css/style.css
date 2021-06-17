@@ -76,6 +76,8 @@ body {
 .control-panel__container {
   display: flex;
   flex-direction: column;
+  min-height: 400px;
+  overflow-y: hidden;
 }
 
 .control-panel__title {
@@ -87,6 +89,7 @@ body {
 .control-panel__table {
   position: relative;
   width: 100%;
+  
 }
 
 .control-panel__table thead tr th {
