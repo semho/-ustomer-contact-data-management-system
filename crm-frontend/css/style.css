@@ -789,8 +789,8 @@ body {
 @media (min-width: 280px) {
 
   .container, .container-md, .container-sm {
-    width: 758px;
-    overflow-x: auto;
+    max-width: 758px;
+    overflow-x: auto; 
   }
 
   .container.header__container {
