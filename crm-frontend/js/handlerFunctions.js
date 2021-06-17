@@ -33,11 +33,20 @@ export function hashchange(container, arrObjData, controlPanelHead) {
 
 //обработка поискового запроса
 export async function onChange(e) {
+  //таблица:
+  const headerTable = document.querySelector('.table');
+  //заглушка, пока ждем ответ сервера
+  headerTable.classList.add('loading-search');
+  const heightTable = headerTable.tBodies[0].offsetHeight;
+  document.querySelector('.control-panel__spiner').style.height = heightTable + 'px';
+  //запрос к серверу
   const queryGetList = await getListClients(e.target.value);
-  const table = document.querySelector('.table ');
+  //удаляем заглушку
+  headerTable.classList.remove('loading-search');
+
   //поисковой запрос без query параметра
   //showSearch(e.target.value, table, queryGetList);
-  updateTable(table, queryGetList);
+  updateTable(headerTable, queryGetList);
 }
 
 //функция обертка debounce для непрерывного ввода
@@ -103,12 +112,47 @@ export function eventNewModal(container, arrObjData, headerTable, id) {
   ];
   //если есть id, значит клиент есть в базе, получаем его из бд и заполняем поля формы
   if (id) {
+    //инпуты
+    const inputFields = document.querySelectorAll('.modal__form input[type="text"]');
+    //кнопки
+    const btn = document.querySelectorAll('.modal__form .btn');
+    //ссылки
+    const link = document.querySelectorAll('.modal__form a.btn');
+    //делаем неактивными пока ждем ответа от сервера
+    fieldsModalDisabled(inputFields, btn, link);
+    //заполним поля из БД
     fillingForm(typeContacts, modal, id);
+    //разблокируем ввод
+    fieldsModalEnabled(inputFields, btn, link);
   }
   //обработчик событий на добавление нового типа контакта в модальном окне
   modal.btnAddContact.addEventListener('click', () => createNewTypeContact(typeContacts, modal.btnAddContact));
   //вешаем обработчик на кнопку сохранения  клиента
   modal.btnSave.addEventListener('click', (event) => saveClient(modal, arrObjData, headerTable, id, event));
+}
+
+function fieldsModalDisabled(inputFields, btn, link) {
+  inputFields.forEach(element => {
+    element.disabled = true;
+  });
+  btn.forEach(element => {
+    element.disabled = true;
+  });
+  link.forEach(element => {
+    element.style.pointerEvents = "none";
+  });
+}
+
+function fieldsModalEnabled(inputFields, btn, link) {
+  inputFields.forEach(element => {
+    element.disabled = false;
+  });
+  btn.forEach(element => {
+    element.disabled = false;
+  });
+  link.forEach(element => {
+    element.style.pointerEvents = "visible";
+  });
 }
 
 //функция на изменение полей ввода фио клиента
@@ -225,6 +269,16 @@ async function saveClient(modal, arrObjData, headerTable, id, event) {
 
     let resultQuery = '';
 
+    //собираем поля формы
+    //инпуты
+    const inputFields = document.querySelectorAll('.modal__form input[type="text"]');
+    //кнопки
+    const btn = document.querySelectorAll('.modal__form .btn');
+    //ссылки
+    const link = document.querySelectorAll('.modal__form a.btn');
+    //и делаем неактивными для пользователя пока ждем ответа от сервера
+    fieldsModalDisabled(inputFields, btn, link);
+
     if (!id) {
       //запрос на добавление нового клиента в бд
       resultQuery = await createClient(client);
@@ -236,6 +290,7 @@ async function saveClient(modal, arrObjData, headerTable, id, event) {
       //запрос на изменение объекта клиента
       resultQuery = await editClient(client, id);
     }
+    
     //если запросы возвращаю объект, а не строку с ошибкой:
     if (typeof resultQuery === 'object' && resultQuery !== null) {
       //добавляем сохраненный объект в исходный массив хранения списка объектов для меньшей нагрузки на сервер во время последующей перерисовки таблицы
@@ -253,6 +308,8 @@ async function saveClient(modal, arrObjData, headerTable, id, event) {
     } else {
       const error = validateErrorsServer(resultQuery);
       modal.btnSave.before(error);
+      //разблокируем ввод
+      fieldsModalEnabled(inputFields, btn, link);
     }
   }
 }

@@ -310,6 +310,7 @@ export function createGroupSelect(select, value) {
   //группа для поля ввода
   const wrapInput = createElement('div', 'add-contact__input-group, input-group-append');
   const input = createElement('input', 'add-contact__input, form-control');
+  input.setAttribute('type', 'text');
   if (value) {
     input.value = value;
   }
