@@ -4,7 +4,6 @@ import {createModal, createGroupSelect, createTableTbody, createModalDelete, cre
 import {createSelect} from "./customSelect.js";
 import {validateName, validateLastName, validateErrorsServer, validateDataTypeContact} from "./validators.js";
 import {getListClients, createClient, deleteClient, getClient, editClient} from "./queryFunctions.js";
-import {showSearch} from "./filters.js";
 
 let requestId;
 

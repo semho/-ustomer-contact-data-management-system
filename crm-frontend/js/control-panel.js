@@ -4,7 +4,7 @@ import {createAppTitle, createTableThead, createTableTbody, createElement} from 
 import {eventNewModal, eventOnTable, debounce, onChange, hashchange, saveLinkHash} from "./handlerFunctions.js";
 import {getListClients} from "./queryFunctions.js";
 import {validateErrorsServer} from "./validators.js";
-import {sortId, sortFullName, sortDateCreate, sortDateUpdate} from "./sorts.js";
+import {sortId, sortFullName, sortDate} from "./sorts.js";
 
 //массив для хранения объектов клиента, объект как пример
 let arrObjData = [
@@ -78,10 +78,10 @@ async function createControlPanelApp(container, title) {
     titleFullName.addEventListener('click', () => sortFullName(controlPanelBody, arrObjData, titleFullName));
     //сортировка по дате создания
     const titleDateCreate = controlPanelHead.querySelector('.table__head-dateNew');
-    titleDateCreate.addEventListener('click', () => sortDateCreate(controlPanelBody, arrObjData, titleDateCreate));
+    titleDateCreate.addEventListener('click', () => sortDate(controlPanelBody, arrObjData, titleDateCreate));
     //сортировка по дате обновления
     const titleDateUpdate = controlPanelHead.querySelector('.table__head-dateUpdate');
-    titleDateUpdate.addEventListener('click', () => sortDateUpdate(controlPanelBody, arrObjData, titleDateUpdate));
+    titleDateUpdate.addEventListener('click', () => sortDate(controlPanelBody, arrObjData, titleDateUpdate));
 
     //вешаем обработчик событий на инпут. создаем функцию debounce
     const inputSearch = document.querySelector('.header__input');

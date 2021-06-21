@@ -46,46 +46,8 @@ export function sortFullName(table, arrObjData, btn) {
   }
   sort = !sort;
 }
-//сортировка по дате создания
-export function sortDateCreate(table, arrObjData, btn) {
-  const arrObjSort = arrObjData.slice();
-
-  function compare(a, b) {
-    //преобразование даты содания к необходимому формату для возможности сравнения через new Date
-    const str1A = a.dateNew.split(' ')[0].split('.');
-    const str2A = a.dateNew.split(' ')[1];
-    const newFormatA = str1A[2] + '-' + str1A[1] + '-' + str1A[0] + 'T' + str2A;
-
-    const str1B = b.dateNew.split(' ')[0].split('.');
-    const str2B = b.dateNew.split(' ')[1];
-    const newFormatB = str1B[2] + '-' + str1B[1] + '-' + str1B[0] + 'T' + str2B;
-
-    const genreA = new Date(newFormatA);
-    const genreB = new Date(newFormatB);
-
-    let comparison = 0;
-
-    if(genreA < genreB) {
-      comparison = 1;
-    } else if (genreA > genreB) {
-      comparison = -1;
-    }
-
-    return comparison;
-  }
-
-  if (sort) {
-    btn.classList.add('is-reverse');
-  //обновляем таблицу
-    updateTable(table, arrObjSort.sort(compare));
-  } else {
-    btn.classList.remove('is-reverse');
-    updateTable(table, arrObjSort.sort(compare).reverse());
-  }
-  sort = !sort;
-}
-//сортировка по дате редактирования
-export function sortDateUpdate(table, arrObjData, btn) {
+//сортировка по дате 
+export function sortDate(table, arrObjData, btn) {
   const arrObjSort = arrObjData.slice();
 
   function compare(a, b) {
