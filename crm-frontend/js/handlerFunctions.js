@@ -88,6 +88,7 @@ export function eventNewModal(container, arrObjData, headerTable, id) {
       const modal = document.querySelector('.modal__content');
       modal.style.opacity = progress;
       modal.style.transform = 'scale(' + progress + ')';
+      document.body.style.overflowY = 'hidden';
     }
   });
 
@@ -97,7 +98,10 @@ export function eventNewModal(container, arrObjData, headerTable, id) {
   } else {
     modal.btnDelete.addEventListener('click', () => modalDelete(container, arrObjData, id));
   }
-  modal.close.addEventListener('click', () => modal.wrapper.remove());
+  modal.close.addEventListener('click', () => {
+    modal.wrapper.remove();
+    document.body.style.overflowY = 'auto';
+  });
   //обработчик событий измений в поле ввода модального окна
   const inputModal = document.querySelectorAll('.modal__content input');
   inputModal.forEach(input => input.addEventListener('input', changeValueInput));
@@ -299,9 +303,9 @@ async function saveClient(modal, arrObjData, headerTable, id, event) {
       updateTable(headerTable, arrObjData);
       //очищаем форму
       //document.formClients.reset();
-
       //удаляем модальное окно
       modal.wrapper.remove();
+      document.body.style.overflowY = 'auto';
       //удаляем заглушку предзагрузки
       headerTable.classList.remove('loading');
     } else {
@@ -483,14 +487,22 @@ function modalDelete(container, arrObjData, idDelete) {
       const modal = document.querySelector('.modal__content');
       modal.style.opacity = progress;
       modal.style.transform = 'scale(' + progress + ')';
+      document.body.style.overflowY = 'hidden';
     }
   });
 
   //обработчики закрытия модального окна
-  modal.close.addEventListener('click', () => modal.wrapper.remove());
-  modal.cansel.addEventListener('click', () => modal.wrapper.remove());
+  modal.close.addEventListener('click', () => {
+    modal.wrapper.remove();
+    document.body.style.overflowY = 'auto';
+  });
+  modal.cansel.addEventListener('click', () => {
+    modal.wrapper.remove()
+    document.body.style.overflowY = 'auto';
+  });
   //вешаем обработчик на кнопку удаления контакта из таблицы и БД
   modal.btnDelete.addEventListener('click', () => eventDeleteClient(modal, arrObjData, idDelete));
+  
 }
 //функция обработки события удаления клиента
 async function eventDeleteClient(modal, arrObjData, idDelete) {
@@ -515,6 +527,7 @@ async function eventDeleteClient(modal, arrObjData, idDelete) {
     //idDelete.parentElement.remove();
     //удаляем модальное окно после события
     modal.wrapper.remove();
+    document.body.style.overflowY = 'auto';
   } else {
     const error = validateErrorsServer(result);
     modal.btnDelete.before(error);

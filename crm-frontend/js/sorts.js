@@ -49,15 +49,16 @@ export function sortFullName(table, arrObjData, btn) {
 //сортировка по дате 
 export function sortDate(table, arrObjData, btn) {
   const arrObjSort = arrObjData.slice();
-
+  const sortBy = btn.classList.value.slice().split('-')[1].split(' ')[0]; //сортируем по этому полю
   function compare(a, b) {
+    
     //преобразование даты изменения к необходимому формату для возможности сравнения через new Date
-    const str1A = a.dateUpdate.split(' ')[0].split('.');
-    const str2A = a.dateUpdate.split(' ')[1];
+    const str1A = a[sortBy].split(' ')[0].split('.');
+    const str2A = a[sortBy].split(' ')[1];
     const newFormatA = str1A[2] + '-' + str1A[1] + '-' + str1A[0] + 'T' + str2A;
 
-    const str1B = b.dateUpdate.split(' ')[0].split('.');
-    const str2B = b.dateUpdate.split(' ')[1];
+    const str1B = b[sortBy].split(' ')[0].split('.');
+    const str2B = b[sortBy].split(' ')[1];
     const newFormatB = str1B[2] + '-' + str1B[1] + '-' + str1B[0] + 'T' + str2B;
 
     const genreA = new Date(newFormatA);

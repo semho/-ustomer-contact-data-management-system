@@ -82,7 +82,7 @@ async function createControlPanelApp(container, title) {
     //сортировка по дате обновления
     const titleDateUpdate = controlPanelHead.querySelector('.table__head-dateUpdate');
     titleDateUpdate.addEventListener('click', () => sortDate(controlPanelBody, arrObjData, titleDateUpdate));
-
+    
     //вешаем обработчик событий на инпут. создаем функцию debounce
     const inputSearch = document.querySelector('.header__input');
     const onChangeDebounce = debounce(onChange, 300);

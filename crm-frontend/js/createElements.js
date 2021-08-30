@@ -121,7 +121,7 @@ function getListContacts(arrObj) {
     step ++;
   });
   //если есть скрытые елементы списка контактов, создаем еще один для раскрытия остальных
-  if (step > 4) {
+  if (step > 5) {
     const total = (step - 1) - 4;
     const li = createElement('li', 'list-contact__more', '+' + String(total));
 
